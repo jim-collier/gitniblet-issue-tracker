@@ -42,7 +42,7 @@
 -->
 
 <!-- TOC ignore:true -->
-# MY_PROGRAM
+# NGDB Issue Tracker
 
 <table style="border: none; border-collapse: collapse;">
 	<tr style="border: none; border-collapse: collapse;">
