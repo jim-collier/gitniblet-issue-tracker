@@ -4,17 +4,6 @@
 <!-- markdownlint-disable MD055 -- Table pipe style [Expected: leading_and_trailing; Actual: leading_only; Missing trailing pipe] -->
 <!-- markdownlint-disable MD041 -- First line in a file should be a top-level heading -->
 
-<!--
-Search and replace:
-
-MY_PROGRAM
-MY_CONTACT_EMAIL
-MY_COPYRIGHT_HOLDER
-MY_TRADEMARK_HOLDER
-MY_LICENSE
-MY_GITHUB_NAME
--->
-
 # Trademark Policy
 
 **Short version:** the code is free; the name is not. You may fork and redistribute the software under its license, but you may not use our name or logo to identify your version, without written permission.
@@ -23,11 +12,11 @@ That said, asking is free - and we'd prefer to say yes. Forks that credibly carr
 
 ## 1. Marks covered
 
-"MY_PROGRAM", the MY_PROGRAM logo, and any stylized variants (the "Marks") are trademarks of MY_COPYRIGHT_HOLDER. We claim these Marks under common law and use them in commerce as MY_PROGRAM™.
+"NGDB Issue Tracker", the NGDB Issue Tracker logo, and any stylized variants (the "Marks") are trademarks of Jim Collier [ID: 2უNაɘ«҂թȹɤξπ๙¿ձϖ]. We claim these Marks under common law and use them in commerce as NGDB Issue Tracker™.
 
 ## 2. Relationship to the software license
 
-MY_PROGRAM is distributed under MY_LICENSE. That license grants rights in **copyright** only. It does not grant, and must not be read as granting, any
+NGDB Issue Tracker is distributed under GNU Affero General Public License v3.0. That license grants rights in **copyright** only. It does not grant, and must not be read as granting, any
 license or right to use the Marks. Trademark rights are expressly reserved.
 
 ## 3. Uses that are always permitted
@@ -36,7 +25,7 @@ No permission from us is needed to:
 
 - Use the Marks in plain text to refer accurately to this project - in documentation, articles, reviews, talks, comparisons, or academic work.
 
-- State factually that your product works with, is built on, is compatible with, or is derived from MY_PROGRAM (e.g. "Foo, a MY_PROGRAM fork", "powered by MY_PROGRAM"), provided the statement is true and your own name is the prominent one.
+- State factually that your product works with, is built on, is compatible with, or is derived from NGDB Issue Tracker (e.g. "Foo, a NGDB Issue Tracker fork", "powered by NGDB Issue Tracker"), provided the statement is true and your own name is the prominent one.
 
 - Redistribute unmodified official builds under the project name.
 
@@ -46,7 +35,7 @@ No permission from us is needed to:
 
 ## 4. Uses that require written permission
 
-- Naming your product, service, company, or app the same as, or confusingly similar to, the Marks - including as a prefix, suffix, or misspelling (e.g. "MY_PROGRAM Pro", "MY_PROGRAM Cloud", "MY_PROGRAMify").
+- Naming your product, service, company, or app the same as, or confusingly similar to, the Marks - including as a prefix, suffix, or misspelling (e.g. "NGDB Issue Tracker Pro", "NGDB Issue Tracker Cloud", "NGDB Issue Trackerify").
 
 - Using the Marks in a domain name, social media handle, or app store listing title.
 
@@ -58,7 +47,7 @@ No permission from us is needed to:
 
 ## 5. Modified versions
 
-If you distribute a modified version, you must remove or replace the Marks in the name, logo, and user-facing branding. You may - and we encourage you to - state plainly that your version is derived from MY_PROGRAM. Do not use the Marks in a way that could lead users to attribute your changes to us.
+If you distribute a modified version, you must remove or replace the Marks in the name, logo, and user-facing branding. You may - and we encourage you to - state plainly that your version is derived from NGDB Issue Tracker. Do not use the Marks in a way that could lead users to attribute your changes to us.
 
 ## 6. Usage requirements
 
@@ -68,11 +57,11 @@ When using the Marks under Section 3:
 
 - Do not alter the logo's colors, proportions, or elements.
 
-- Include an attribution such as: "MY_PROGRAM is a trademark of MY_TRADEMARK_HOLDER."
+- Include an attribution such as: "NGDB Issue Tracker is a trademark of Jim Collier."
 
 ## 7. Enforcement and changes
 
-**We may revoke permission for any use that damages the Marks or misleads users**. We may revise this policy at any time; the current version lives at <https://github.com/MY_GITHUB_NAME/MY_PROGRAM/blob/main/trademark.md>. Requests for permission, and reports of misuse, go to MY_CONTACT_EMAIL.
+**We may revoke permission for any use that damages the Marks or misleads users**. We may revise this policy at any time; the current version lives at <https://github.com/jim-collier/ngdb-issue-tracker/blob/main/trademark.md>. Requests for permission, and reports of misuse, go to ngdb-issue-trackerⒶyottacore.com.
 
 ---
 

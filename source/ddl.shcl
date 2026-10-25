@@ -1,0 +1,239 @@
+## NGDB Issue Tracker - the database definition nano-git-db opens.
+## Fields follow the backlog template. Every table also gets id, is_active,
+## date_created and is_deleted from nano-git-db.
+## Lists are written the way nano-git-db's shcl 2.x reader takes them, bare and
+## comma separated, until it reads shcl format 3.
+
+## The test log sits inside the dev repo, where a sync would commit and push to
+## whatever branch is checked out. Off until a deployment can turn it on in its
+## own config.
+tunables:
+	git_sync_frequency: 0
+
+database:
+	tables:
+
+		table: issue
+			fields:
+				field: ref  ## the item's own ID, a local timestamp such as 2026102508172800
+					type: string
+					ui:
+						label: "ID"
+				field: title
+					type: string
+					validation:
+						null_ok: no
+						empty_ok: no
+				field: type
+					type: int
+					ui:
+						list_type: lookup
+						list_source: 1
+				field: status
+					type: int
+					ui:
+						list_type: lookup
+						list_source: 2
+				field: priority  ## Priority for a feature or enhancement, Severity for a bug
+					type: int
+					ui:
+						label: "Priority | Severity"
+						list_type: lookup
+						list_source: 3
+				field: needs_local_tests
+					type: string
+					ui:
+						label: "Needs local test suite run?"
+				field: needs_external_testing
+					type: string
+				field: needs_hand_testing
+					type: string
+				field: opened
+					type: datetime_local
+				field: opened_by
+					type: string
+				field: assigned_to
+					type: string
+				field: parent_issue  ## empty = top level
+					type: ref
+				field: superseded_by
+					type: ref
+				field: component
+					type: string
+				field: target_os
+					type: string
+				field: test_environment
+					type: string
+				field: version_build
+					type: string
+					ui:
+						label: "Version and build"
+				field: requirements  ## feature
+					type: string
+				field: steps_to_reproduce  ## bug
+					type: string
+				field: incorrect_behavior  ## bug
+					type: string
+				field: expected_behavior  ## bug
+					type: string
+				field: reproduced  ## bug: no, or when, where and how
+					type: string
+				field: possible_cause  ## bug
+					type: string
+				field: actual_cause  ## bug
+					type: string
+				field: estimated_effort
+					type: int
+					ui:
+						list_type: lookup
+						list_source: 4
+				field: actual_effort
+					type: int
+					ui:
+						list_type: lookup
+						list_source: 4
+				field: actual_fix  ## bug
+					type: string
+				field: branch
+					type: string
+				field: commit
+					type: string
+				field: test_case  ## a test ID, or why there's none
+					type: string
+				field: acceptance_signoff
+					type: string
+				field: closed
+					type: datetime_local
+			uniques:
+				unique: ref
+			indexes:
+				index: status
+				index: parent_issue
+			features:
+				comments: yes  ## the progress log
+				audit_trail: yes
+				uri_attachments: yes
+
+		## Decisions are the recorded calls a fix must not move, so each is its own
+		## row rather than a comment.
+		table: decision
+			fields:
+				field: issue
+					type: ref
+					validation:
+						null_ok: no
+						empty_ok: no
+				field: text
+					type: string
+					validation:
+						null_ok: no
+						empty_ok: no
+				field: decided
+					type: datetime_local
+			indexes:
+				index: issue
+			features:
+				audit_trail: yes
+
+		## Prereq and related IDs. One row per link, so either side can be queried.
+		table: issue_link
+			fields:
+				field: issue
+					type: ref
+					validation:
+						null_ok: no
+						empty_ok: no
+				field: other_issue
+					type: ref
+					validation:
+						null_ok: no
+						empty_ok: no
+				field: kind
+					type: int
+					ui:
+						list_type: lookup
+						list_source: 5
+			indexes:
+				index: issue
+				index: other_issue
+
+		table: person
+			fields:
+				field: screen_name
+					type: string
+				field: full_name
+					type: string
+				field: role  ## maintainer | contributor | reviewer
+					type: string
+			uniques:
+				unique: screen_name
+
+		table: component
+			fields:
+				field: name
+					type: string
+				field: lead
+					type: string
+			uniques:
+				unique: name
+
+	seed:
+		table: lookups
+			row: idx=1, title="Issue type"
+			row: idx=2, title="Status"
+			row: idx=3, title="Priority or severity"
+			row: idx=4, title="Effort"
+			row: idx=5, title="Link kind"
+
+		## Status sort is the backlog's sort order.
+		table: lookup_values
+			row: idx=1,  lookups_idx=1, title="Bug",         sort=1
+			row: idx=2,  lookups_idx=1, title="Feature",     sort=2
+			row: idx=3,  lookups_idx=1, title="Enhancement", sort=3
+			row: idx=4,  lookups_idx=1, title="Task",        sort=4
+
+			row: idx=10, lookups_idx=2, title="Waiting for answers",           sort=1
+			row: idx=11, lookups_idx=2, title="Waiting on UAT",                sort=2
+			row: idx=12, lookups_idx=2, title="Testing",                       sort=3
+			row: idx=13, lookups_idx=2, title="Waiting on a full CICD run",    sort=4
+			row: idx=14, lookups_idx=2, title="Waiting on a partial CICD run", sort=5
+			row: idx=15, lookups_idx=2, title="Waiting on automated testing",  sort=6
+			row: idx=16, lookups_idx=2, title="Can't reproduce",               sort=7
+			row: idx=17, lookups_idx=2, title="Stalled",                       sort=8
+			row: idx=18, lookups_idx=2, title="Started",                       sort=9
+			row: idx=19, lookups_idx=2, title="Queued",                        sort=10
+			row: idx=20, lookups_idx=2, title="Done",                          sort=11
+			row: idx=21, lookups_idx=2, title="Deferred",                      sort=12
+			row: idx=22, lookups_idx=2, title="Canceled",                      sort=13
+			row: idx=23, lookups_idx=2, title="Moot",                          sort=14
+
+			row: idx=30, lookups_idx=3, title="Critical", sort=1
+			row: idx=31, lookups_idx=3, title="High",     sort=2
+			row: idx=32, lookups_idx=3, title="Avg",      sort=3
+			row: idx=33, lookups_idx=3, title="Low",      sort=4
+
+			row: idx=40, lookups_idx=4, title="High", sort=1
+			row: idx=41, lookups_idx=4, title="Avg",  sort=2
+			row: idx=42, lookups_idx=4, title="Low",  sort=3
+
+			row: idx=50, lookups_idx=5, title="Prereq",  sort=1
+			row: idx=51, lookups_idx=5, title="Related", sort=2
+
+ui:
+	views:
+
+		view: "board"
+			startup_named_query: "Open issues"
+			layout:
+				block: 1
+					table: issue
+					type: tree_grid
+					parent_field: parent_issue
+
+		view: "people"
+			layout:
+				block: 1
+					table: person
+					type: grid
+
+	default_view: "board"

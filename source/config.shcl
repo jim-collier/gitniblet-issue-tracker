@@ -1,0 +1,9 @@
+## Where this database's files live. A relative path is relative to this file.
+## ${HOME} is the one variable expanded.
+## nano-git-db reads its registry records with absolute paths only, so
+## utility/ngdb-dev.bash turns this file into one and runs ngdb against it.
+
+name:        "issue-tracker_test"
+ddl_path:    "ddl.shcl"
+log_dir:     "../ngdb/issue-tracker_test"
+sqlite_path: "${HOME}/.cache/ngdb/issue-tracker_test/local.sqlite"
