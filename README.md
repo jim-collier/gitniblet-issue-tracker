@@ -47,13 +47,13 @@
 <table style="border: none; border-collapse: collapse;">
 	<tr style="border: none; border-collapse: collapse;">
 		<td style="border: none; border-collapse: collapse;"><img src="assets/logo.png" alt="Logo" width="320"/></td>
-		<td style="border: none;">This is a thing.</td>
+		<td style="border: none;">An issue tracker built as a nano-git-db database. It's one schema file and a plain CSV log that syncs and merges through git, with no server to run.</td>
 	</tr>
 </table>
 
 <p align="center"><img src="assets/logo.png" alt="" width="128"></p>
 
-This is a thing.
+An issue tracker built as a nano-git-db database. It's one schema file and a plain CSV log that syncs and merges through git, with no server to run.
 
 <!-- TOC ignore:true -->
 ## Table of contents
@@ -63,18 +63,64 @@ This is a thing.
 - [Why](#why)
 - [Features](#features)
 - [Installing](#installing)
-- [Building from source](#building-from-source)
+- [Developing](#developing)
+- [Support](#support)
 - [Copyright and license](#copyright-and-license)
 
 <!-- /TOC -->
 
 ## Why
 
+A markdown backlog is fine until a project gets busy. Then items need sorting by status and priority, links to each other, and a history of who changed what. Hosted trackers do that, but the data ends up on someone else's server and out of the repo.
+
+This keeps the fields a backlog item already has, as a database that [nano-git-db](https://github.com/yottacore/nano-git-db) opens. The data stays in git as text, beside the code it's about. Open it in a terminal UI, a local web page, or the command line.
+
+It isn't for teams that want accounts, email notices, or a public issue page. A hosted tracker is the better choice there.
+
 ## Features
+
+- Issue fields follow a backlog item: type, status, priority or severity, what testing it needs, repro steps, cause, fix, branch, commit, test case, and signoff.
+
+- Type, status, priority, and effort are pick lists, seeded from the schema.
+
+- Child issues, recorded decisions, prereq and related links, comments for a progress log, an audit trail, and links to outside files.
+
+- Named queries for open, waiting, critical and high, closed, and everything.
+
+- The log is the database. It's append-only CSV that git merges by union, and the SQLite view is a local cache rebuilt from it.
 
 ## Installing
 
-## Building from source
+There's no installer yet. It needs `ngdb` and `shcl` on the PATH, from [nano-git-db](https://github.com/yottacore/nano-git-db) and [shcl](https://github.com/yottacore/shcl).
+
+## Developing
+
+The files a deployment uses are the working files here:
+
+| What    | File
+| :---    | :---
+| Config  | `source/config.shcl`
+| Schema  | `source/ddl.shcl`, plus `source/ddl.queries.shcl` for named queries
+| Tx-log  | `ngdb/issue-tracker_test/txlog.csv`
+| View    | `~/.cache/ngdb/issue-tracker_test/local.sqlite`
+
+A real deployment can keep these anywhere, as its own config says. `utility/ngdb-dev.bash` runs ngdb against the config and adds the database name to each command:
+
+~~~bash
+utility/ngdb-dev.bash --tui
+utility/ngdb-dev.bash create issue ref=2026102508172800 title="First item" type=4 status=19
+utility/ngdb-dev.bash query "SELECT ref, title FROM issue WHERE is_deleted = 0"
+~~~
+
+`cicd/cicd.bash` lints and tests, then commits and pushes. `--help` lists its flags. Day to day work goes on `dev`, and `main` takes releases.
+
+## Support
+
+NGDB Issue Tracker is written and maintained in spare time. If it saves you time, these keep it going:
+
+- [GitHub Sponsors](https://github.com/sponsors/jim-collier)
+
+- [Ko-fi](https://ko-fi.com/jimcollier)
 
 ## Copyright and license
 

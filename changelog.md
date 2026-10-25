@@ -22,6 +22,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- First schema, with issue, decision, issue_link, person, and component tables, and pick lists for type, status, priority, and effort.
+
+- Named queries for open, waiting, critical and high, closed, and everything.
+
+- `source/config.shcl` and `utility/ngdb-dev.bash`, to open the test database with ngdb.
+
+- `cicd/cicd.bash`, with lint and the schema tests.
+
 ### Changed
 
 ### Removed

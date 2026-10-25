@@ -2,5 +2,5 @@
 # code owners" to enforce). Last match wins.
 
 # Donation page: owner-only for now (money-adjacent, must not be changed loosely).
-/DONATE.md @MY_GITHUB_NAME
-/.github/CODEOWNERS  @MY_GITHUB_NAME
+/DONATE.md @jim-collier
+/.github/CODEOWNERS  @jim-collier
