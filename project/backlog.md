@@ -24,17 +24,6 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 
 ## Issues
 
-- The tx-log file is `txlog.csv`, but the layout asks for `tx-log.csv`
-	- ID: 2026102509013410
-	- Type: Task
-	- Status: Waiting for answers
-	- Priority: Avg
-	- Opened: 20261025-090134
-	- Opened by: JC
-	- Requirements:
-		- nano-git-db names the file itself, inside `log_dir`. It has no setting for the name.
-		- Either nano-git-db learns `tx-log.csv`, or a name setting, or the layout here says `txlog.csv`. The layout says `txlog.csv` for now, since that's the file nano-git-db reads.
-
 - 20261025-081728: A CI/CD pipeline kicked off by a bash script (`cicd/cicd.bash`): builds, tests, and can commit and push.
 	- Status: Waiting on UAT
 	- Progress log:
@@ -98,6 +87,8 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 		- nano-git-db's own schema for the DDL fails to load in shcl 3, so a DDL can't be checked against it there.
 	- Expected behavior [Bug]: nano-git-db reads shcl 3, and its DDL schema loads in shcl 3.
 	- Note: The seed rows here are the only list lines. dedqy fails on any other shcl 3 error.
+	- Progress log:
+		- 2026-10-25: nano-git-db is moving to shclwrap and shcl 3.0. Filed there as 2026102509204445. Once it's in, the seed rows here switch to `[a, b]` and dedqy checks the whole file.
 
 - nano-git-db: per-deployment git sync, set in the config, not the schema
 	- ID: 2026102509013460
@@ -140,10 +131,14 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Opened: 20261025-090134
 	- Opened by: JC
 	- Requirements:
-		- `--config` takes a registry folder, and records need absolute paths. ngdb also writes `last_opened` back into the record.
-		- Point ngdb at a config file like `source/config.shcl`. Paths in it are relative to the file, and `${HOME}` works.
+		- Today `--config` takes only a registry folder, and records need absolute paths. ngdb also writes `last_opened` back into the record.
+		- A config file of any name and path declares the schema, the tx-log, and the view, each with any name and path. The tx-log's file name is fixed as `txlog.csv` today.
+		- `--config` takes a folder, where ngdb looks for `config.shcl`, or a config file by name.
+		- Paths in the config are relative to the file, and `${HOME}` works.
 		- Keep state like `last_opened` out of that file, so it can be tracked in git.
 		- Then `utility/ngdb-dev.bash` can go.
+	- Progress log:
+		- 2026-10-25: Filed in nano-git-db as 2026102509202821.
 
 - CICD reset: containers
 	- ID: 2026102509013500
@@ -222,6 +217,20 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Test case: The pipeline's own run, since these are how it runs. Each test line has its ID.
 	- Acceptance signoff: Self-closed: built in with the pipeline.
 	- Closed: 20261025-090134
+
+- The tx-log file is `txlog.csv`, but the layout asks for `tx-log.csv`
+	- ID: 2026102509013410
+	- Type: Task
+	- Status: Done
+	- Priority: Avg
+	- Opened: 20261025-090134
+	- Opened by: JC
+	- Requirements:
+		- nano-git-db names the file itself, inside `log_dir`. It has no setting for the name.
+	- Decisions:
+		- 2026-10-25 JC: Use `txlog.csv`. nano-git-db should also take any name and path for it from a config file of any name and path. That's 2026102509013490 here.
+	- Test case: Not applicable, since the layout already used `txlog.csv`.
+	- Closed: 20261025-092044
 
 ## Template
 

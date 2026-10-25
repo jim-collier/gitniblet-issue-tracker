@@ -47,7 +47,7 @@ The working files are laid out the way a real deployment would be. A deployment 
 
 - Prereq and related links are rows in `issue_link`, one per link. That works today without ngdb's many-to-many support.
 
-- Lists in the schema use ngdb's shcl 2.x form, bare and comma separated. shcl 3 refuses that form, and ngdb doesn't read the bracketed one yet. So the schema follows the reader that opens it.
+- Lists in the schema use ngdb's shcl 2.x form, bare and comma separated. shcl 3 refuses that form, and ngdb doesn't read the bracketed one yet. So the schema follows the reader that opens it. nano-git-db is moving to shcl 3 through shclwrap, and the schema switches to `[a, b]` then.
 
 - Git sync is off in the schema. The test log lives inside this repo, and a sync would commit and push to whatever branch is checked out.
 
