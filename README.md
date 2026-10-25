@@ -53,7 +53,11 @@
 
 <p align="center"><img src="assets/logo.png" alt="" width="128"></p>
 
-An issue tracker built as a nano-git-db database. It's one schema file and a plain CSV log that syncs and merges through git, with no server to run.
+An issue tracker built as a nano-git-db database. The main deliverable is a `.shcl`-format schema file for `nano-git-db`.
+
+The result is a robust issue-tracking database that's serverless, distributed, and uses Git's built-in conflict resolution for field-level multiuser-capability.
+
+And can sit in a project's own git repository. (Multiple issue databases can be active at once.)
 
 <!-- TOC ignore:true -->
 ## Table of contents
@@ -64,18 +68,30 @@ An issue tracker built as a nano-git-db database. It's one schema file and a pla
 - [Features](#features)
 - [Installing](#installing)
 - [Developing](#developing)
-- [Support](#support)
+- [Support NGDB Issue Tracker](#support-ngdb-issue-tracker)
 - [Copyright and license](#copyright-and-license)
 
 <!-- /TOC -->
 
 ## Why
 
-A markdown backlog is fine until a project gets busy. Then items need sorting by status and priority, links to each other, and a history of who changed what. Hosted trackers do that, but the data ends up on someone else's server and out of the repo.
+There's a million software project issue management tools. But the typical approaches tend to target similar use-cases, leaving gaps for certain use-cases that this tool fills. No issue management tool is perfect for everything. (NGDB Issue Tracker is also not "perfect for everything".)
 
-This keeps the fields a backlog item already has, as a database that [nano-git-db](https://github.com/yottacore/nano-git-db) opens. The data stays in git as text, beside the code it's about. Open it in a terminal UI, a local web page, or the command line.
+Examples:
 
-It isn't for teams that want accounts, email notices, or a public issue page. A hosted tracker is the better choice there.
+- A markdown or other text-based backlog is fine until a project grows beyond proof-of-concept, and/or adds more developers. Then items need more advanced features like sorting and gouping by status and priority, nesting, gating, links to each other, change history, etc.
+
+- Enterprise-class web-based issue tracking can be very robust (e.g. Jira). But for some projects it's either overkill, not even possible, or not a consideration. For example:
+
+	- The project is very large and loose, and getting everyone signed up and committed to using it might be impossible. (E.g. Linux kernel.)
+
+	- You have privacy/security/longevity concerns about your data living on someone else's server. (This would mostly be relevant if you are hosting your own private git repo for those reasons, and/or are using the encryption features of nano-git-db enterprise edition.)
+
+- GitHub (et. al) Issues:
+
+	- Perfect for their intended purpose: Allowing users to report issues. Beyond that, they're pretty useless. (But weren't intended to be more than that.)
+
+	- They own your data, and you're tied down to one git host long-term.
 
 ## Features
 
@@ -87,7 +103,7 @@ It isn't for teams that want accounts, email notices, or a public issue page. A 
 
 - Named queries for open, waiting, critical and high, closed, and everything.
 
-- The log is the database. It's append-only CSV that git merges by union, and the SQLite view is a local cache rebuilt from it.
+- The log is the database. It's append-only CSV that git merges by union, and the SQLite view is your own local cache built from it.
 
 ## Installing
 
@@ -104,7 +120,7 @@ The files a deployment uses are the working files here:
 | Tx-log  | `ngdb/issue-tracker_test/txlog.csv`
 | View    | `~/.cache/ngdb/issue-tracker_test/local.sqlite`
 
-A real deployment can keep these anywhere, as its own config says. `utility/ngdb-dev.bash` runs ngdb against the config and adds the database name to each command:
+A real deployment can keep these anywhere. `utility/ngdb-dev.bash` runs ngdb against the config and adds the database name to each command:
 
 ~~~bash
 utility/ngdb-dev.bash --tui
@@ -114,7 +130,7 @@ utility/ngdb-dev.bash query "SELECT ref, title FROM issue WHERE is_deleted = 0"
 
 `cicd/cicd.bash` lints and tests, then commits and pushes. `--help` lists its flags. Day to day work goes on `dev`, and `main` takes releases.
 
-## Support
+## Support NGDB Issue Tracker
 
 NGDB Issue Tracker is written and maintained in spare time. If it saves you time, these keep it going:
 
