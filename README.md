@@ -44,20 +44,21 @@
 <!-- TOC ignore:true -->
 # NGDB Issue Tracker
 
+<!--
 <table style="border: none; border-collapse: collapse;">
 	<tr style="border: none; border-collapse: collapse;">
 		<td style="border: none; border-collapse: collapse;"><img src="assets/logo.png" alt="Logo" width="320"/></td>
 		<td style="border: none;">An issue tracker built as a nano-git-db database. It's one schema file and a plain CSV log that syncs and merges through git, with no server to run.</td>
 	</tr>
 </table>
-
 <p align="center"><img src="assets/logo.png" alt="" width="128"></p>
+-->
 
-An issue tracker built as a nano-git-db database. The main deliverable is a `.shcl`-format schema file for `nano-git-db`.
+A simple but full-featured issue management system, built as a nano-git-db database. The main deliverable is a `.shcl`-format schema file for `nano-git-db`.
 
-The result is a robust issue-tracking database that's serverless, distributed, and uses Git's built-in conflict resolution for field-level multiuser-capability.
+The result is an issue-tracker that's serverless, distributed, and uses Git's built-in conflict resolution for field-level multiuser-capability.
 
-And can sit in a project's own git repository. (Multiple issue databases can be active at once.)
+It can reside in any project's own git repository, and multiple issue databases can be active at once.
 
 <!-- TOC ignore:true -->
 ## Table of contents
@@ -141,7 +142,7 @@ NGDB Issue Tracker is written and maintained in spare time. If it saves you time
 ## Copyright and license
 
 > Copyright © 2026 Jim Collier [ID: 2უNაɘ«҂թȹɤξπ๙¿ձϖ]<br />
-> Licensed under the [GNU Affero General Public License v3.0](license.md) (`AGPL-3.0-only`). No warranty.<br />
+> Licensed under the [GNU Affero General Public License v3.0](license.md) (`AGPL-3.0-only`).<br />
 > No warranty.<br />
 > NGDB Issue Tracker™ is a [trademark](trademark.md) of Jim Collier.
 
