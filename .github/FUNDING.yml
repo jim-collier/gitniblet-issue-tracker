@@ -1,6 +1,6 @@
 # Shows a "Sponsor" button on the repo. Fill in each platform you set up;
 # leave the rest commented. github must be a GitHub Sponsors profile that exists.
-github: [MY_GITHUB_NAME]
-# ko_fi: your-handle
+github: [jim-collier]
+ko_fi: jimcollier
 # liberapay: your-handle
-# custom: ["https://github.com/MY_GITHUB_NAME/MY_PROGRAM/blob/HEAD/DONATE.md"]
+# custom: ["https://github.com/jim-collier/ngdb-issue-tracker/blob/HEAD/DONATE.md"]

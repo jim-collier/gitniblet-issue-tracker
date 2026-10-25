@@ -1,0 +1,32 @@
+## Named queries. Same base name as the DDL, so nano-git-db finds them.
+## Status values are lookup idx numbers from the DDL's seed: block.
+## 20 to 23 are Done, Deferred, Canceled and Moot.
+
+query_name: "Open issues"
+	view:   "board"
+	sort:   1
+	active: yes
+	SQL:    `SELECT * FROM issue WHERE status NOT IN (20, 21, 22, 23) AND is_deleted = 0`
+
+query_name: "Waiting"
+	view:   "board"
+	sort:   2
+	active: yes
+	SQL:    `SELECT * FROM issue WHERE status BETWEEN 10 AND 15 AND is_deleted = 0`
+
+query_name: "Critical and high"
+	view:   "board"
+	sort:   3
+	active: yes
+	SQL:    `SELECT * FROM issue WHERE priority IN (30, 31) AND status NOT IN (20, 21, 22, 23) AND is_deleted = 0`
+
+query_name: "Closed"
+	view:   "board"
+	sort:   4
+	active: yes
+	SQL:    `SELECT * FROM issue WHERE status IN (20, 21, 22, 23) AND is_deleted = 0`
+
+query_name: "Everything"
+	sort:   9
+	active: yes
+	SQL:    `SELECT * FROM issue WHERE is_deleted = 0`
