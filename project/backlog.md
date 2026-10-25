@@ -102,6 +102,35 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 		- A test log inside a dev repo needs it off. A real one wants it on.
 		- Sync pulls without `--ff-only` and pushes `HEAD`, on whatever branch is checked out. A dev repo wants neither.
 
+- Feature: The tables, fields, and views of a full issue tracker
+	- ID: 2026102513400533
+	- Type: Feature
+	- Status: Queued
+	- Priority: High
+	- Opened: 20261025-134006
+	- Opened by: JC
+	- Related IDs: 2026102509013420, 2026102513400563
+	- Requirements:
+		- Every standard table and field a competent issue tracker has, beyond the backlog template's rows. Projects, components, milestones, labels, people, and attachments, for a start.
+		- The common views, such as a Kanban board by status, a nested list by parent, and a plain filtered list.
+		- Use nano-git-db's built-in tables, relationships, and views as far as they go, and past that. Each gap gets an item here and a fix in nano-git-db.
+	- Reason:
+		- This project exists to stress shcl, shclwrap, and nano-git-db until they're feature complete. A thin schema wouldn't find much.
+
+- Feature: An MCP server, from early on
+	- ID: 2026102513400563
+	- Type: Feature
+	- Status: Queued
+	- Priority: High
+	- Opened: 20261025-134006
+	- Opened by: JC
+	- Related IDs: 2026102513400533
+	- Requirements:
+		- An agent can list, read, file, and update issues and their comments, decisions, and links through MCP.
+		- It grows with the schema, the TUI, the GUI, and the web UI, not after them.
+	- Needs more thought:
+		- Whether the server is generic in nano-git-db, for any schema, with only tracker-specific tools here.
+
 - nano-git-db: `empty_ok: no` and `required: yes` don't refuse an empty value
 	- ID: 2026102509013470
 	- Type: Bug
@@ -137,6 +166,20 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 		- Paths in the config are relative to the file, and `${HOME}` works.
 		- Keep state like `last_opened` out of that file, so it can be tracked in git.
 		- Then `utility/ngdb-dev.bash` can go.
+
+- Feature: Import a project's backlog.md
+	- ID: 2026102513400593
+	- Type: Feature
+	- Status: Queued
+	- Priority: Avg
+	- Opened: 20261025-134006
+	- Opened by: JC
+	- Related IDs: 2026102513400533
+	- Requirements:
+		- Each project moves its own backlog.md into the tracker, one at a time. shcl, shclwrap, and nano-git-db go first.
+		- The schema fields follow the template's rows, so the import maps them field by field.
+	- Needs more detail:
+		- Items in older formats, with no ID or with the ID in the title.
 	- Progress log:
 		- 2026-10-25: Filed in nano-git-db as 2026102509202821.
 
@@ -197,6 +240,8 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Requirements:
 		- The demo's schema and queries started this one. Its walkthrough and seed script still point at the demo's own files.
 		- They need this schema's lookups and field names before they move.
+	- Progress log:
+		- 2026-10-25: The demo is gone from nano-git-db-floss. Its files are still in that repo's history, under `demos/t7em6_issue-tracker/` at c87f198.
 
 - 20261025-081804: Dev-environment install script (Linux bash, macOS sh, Windows PowerShell), runnable via a single `curl`/`wget` and documented under "how to develop". Clones main, installs dependencies, and states what it will do with an option to abort.
 

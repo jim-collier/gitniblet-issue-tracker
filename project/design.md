@@ -15,6 +15,10 @@ Design, requirements, and direction. The active pre-v1.0.0 bug/feature task list
 
 - It's developed alongside shcl, shclwrap, and nano-git-db. A gap found here is filed here, then fixed there.
 
+- Its main job is to push those projects to feature complete. In order: shcl, shclwrap, nano-git-db, then nano-git-db's enterprise edition. It should also be a good issue tracker.
+
+- The schema, the TUI, the GUI, the web UI, and the MCP server grow together. The GUI is the enterprise edition's native one, used here from early on.
+
 ## Project structure
 
 ### Folder structure
