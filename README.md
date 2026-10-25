@@ -142,7 +142,7 @@ NGDB Issue Tracker is written and maintained in spare time. If it saves you time
 ## Copyright and license
 
 > Copyright © 2026 Jim Collier [ID: 2უNაɘ«҂թȹɤξπ๙¿ձϖ]<br />
-> Licensed under the [GNU Affero General Public License v3.0](license.md) (`AGPL-3.0-only`). No warranty.<br />
+> Licensed under the [GNU Affero General Public License v3.0](license.md) (`AGPL-3.0-only`).<br />
 > No warranty.<br />
 > NGDB Issue Tracker™ is a [trademark](trademark.md) of Jim Collier.
 
