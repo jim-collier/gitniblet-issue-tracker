@@ -12,11 +12,11 @@ That said, asking is free - and we'd prefer to say yes. Forks that credibly carr
 
 ## 1. Marks covered
 
-"NGDB Issue Tracker", the NGDB Issue Tracker logo, and any stylized variants (the "Marks") are trademarks of Jim Collier [ID: 2უNაɘ«҂թȹɤξπ๙¿ձϖ]. We claim these Marks under common law and use them in commerce as NGDB Issue Tracker™.
+"GITNIBLET Issue Tracker", the GITNIBLET Issue Tracker logo, and any stylized variants (the "Marks") are trademarks of Jim Collier [ID: 2უNაɘ«҂թȹɤξπ๙¿ձϖ]. We claim these Marks under common law and use them in commerce as GITNIBLET Issue Tracker™.
 
 ## 2. Relationship to the software license
 
-NGDB Issue Tracker is distributed under GNU Affero General Public License v3.0. That license grants rights in **copyright** only. It does not grant, and must not be read as granting, any
+GITNIBLET Issue Tracker is distributed under GNU Affero General Public License v3.0. That license grants rights in **copyright** only. It does not grant, and must not be read as granting, any
 license or right to use the Marks. Trademark rights are expressly reserved.
 
 ## 3. Uses that are always permitted
@@ -25,7 +25,7 @@ No permission from us is needed to:
 
 - Use the Marks in plain text to refer accurately to this project - in documentation, articles, reviews, talks, comparisons, or academic work.
 
-- State factually that your product works with, is built on, is compatible with, or is derived from NGDB Issue Tracker (e.g. "Foo, a NGDB Issue Tracker fork", "powered by NGDB Issue Tracker"), provided the statement is true and your own name is the prominent one.
+- State factually that your product works with, is built on, is compatible with, or is derived from GITNIBLET Issue Tracker (e.g. "Foo, a GITNIBLET Issue Tracker fork", "powered by GITNIBLET Issue Tracker"), provided the statement is true and your own name is the prominent one.
 
 - Redistribute unmodified official builds under the project name.
 
@@ -35,7 +35,7 @@ No permission from us is needed to:
 
 ## 4. Uses that require written permission
 
-- Naming your product, service, company, or app the same as, or confusingly similar to, the Marks - including as a prefix, suffix, or misspelling (e.g. "NGDB Issue Tracker Pro", "NGDB Issue Tracker Cloud", "NGDB Issue Trackerify").
+- Naming your product, service, company, or app the same as, or confusingly similar to, the Marks - including as a prefix, suffix, or misspelling (e.g. "GITNIBLET Issue Tracker Pro", "GITNIBLET Issue Tracker Cloud", "GITNIBLET Issue Trackerify").
 
 - Using the Marks in a domain name, social media handle, or app store listing title.
 
@@ -47,7 +47,7 @@ No permission from us is needed to:
 
 ## 5. Modified versions
 
-If you distribute a modified version, you must remove or replace the Marks in the name, logo, and user-facing branding. You may - and we encourage you to - state plainly that your version is derived from NGDB Issue Tracker. Do not use the Marks in a way that could lead users to attribute your changes to us.
+If you distribute a modified version, you must remove or replace the Marks in the name, logo, and user-facing branding. You may - and we encourage you to - state plainly that your version is derived from GITNIBLET Issue Tracker. Do not use the Marks in a way that could lead users to attribute your changes to us.
 
 ## 6. Usage requirements
 
@@ -57,11 +57,11 @@ When using the Marks under Section 3:
 
 - Do not alter the logo's colors, proportions, or elements.
 
-- Include an attribution such as: "NGDB Issue Tracker is a trademark of Jim Collier."
+- Include an attribution such as: "GITNIBLET Issue Tracker is a trademark of Jim Collier."
 
 ## 7. Enforcement and changes
 
-**We may revoke permission for any use that damages the Marks or misleads users**. We may revise this policy at any time; the current version lives at <https://github.com/jim-collier/ngdb-issue-tracker/blob/main/trademark.md>. Requests for permission, and reports of misuse, go to ngdb-issue-trackerⒶyottacore.com.
+**We may revoke permission for any use that damages the Marks or misleads users**. We may revise this policy at any time; the current version lives at <https://github.com/jim-collier/gitniblet-issue-tracker/blob/main/trademark.md>. Requests for permission, and reports of misuse, go to gitniblet-issue-trackerⒶyottacore.com.
 
 ---
 

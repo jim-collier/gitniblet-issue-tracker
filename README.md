@@ -42,19 +42,19 @@
 -->
 
 <!-- TOC ignore:true -->
-# NGDB Issue Tracker
+# GITNIBLET Issue Tracker
 
 <!--
 <table style="border: none; border-collapse: collapse;">
 	<tr style="border: none; border-collapse: collapse;">
 		<td style="border: none; border-collapse: collapse;"><img src="assets/logo.png" alt="Logo" width="320"/></td>
-		<td style="border: none;">An issue tracker built as a nano-git-db database. It's one schema file and a plain CSV log that syncs and merges through git, with no server to run.</td>
+		<td style="border: none;">An issue tracker built as a gitniblet database. It's one schema file and a plain CSV log that syncs and merges through git, with no server to run.</td>
 	</tr>
 </table>
 <p align="center"><img src="assets/logo.png" alt="" width="128"></p>
 -->
 
-A simple but full-featured issue management system, built as a nano-git-db database. The main deliverable is a `.shcl`-format schema file for `nano-git-db`.
+A simple but full-featured issue management system, built as a gitniblet database. The main deliverable is a `.shcl`-format schema file for `gitniblet`.
 
 The result is an issue-tracker that's serverless, distributed, and uses Git's built-in conflict resolution for field-level multiuser-capability.
 
@@ -69,14 +69,14 @@ It can reside in any project's own git repository, and multiple issue databases 
 - [Features](#features)
 - [Installing](#installing)
 - [Developing](#developing)
-- [Support NGDB Issue Tracker](#support-ngdb-issue-tracker)
+- [Support GITNIBLET Issue Tracker](#support-gitniblet-issue-tracker)
 - [Copyright and license](#copyright-and-license)
 
 <!-- /TOC -->
 
 ## Why
 
-There's a million software project issue management tools. But the typical approaches tend to target similar use-cases, leaving gaps for certain use-cases that this tool fills. No issue management tool is perfect for everything. (NGDB Issue Tracker is also not "perfect for everything".)
+There's a million software project issue management tools. But the typical approaches tend to target similar use-cases, leaving gaps for certain use-cases that this tool fills. No issue management tool is perfect for everything. (GITNIBLET Issue Tracker is also not "perfect for everything".)
 
 Examples:
 
@@ -86,7 +86,7 @@ Examples:
 
 	- The project is very large and loose, and getting everyone signed up and committed to using it might be impossible. (E.g. Linux kernel.)
 
-	- You have privacy/security/longevity concerns about your data living on someone else's server. (This would mostly be relevant if you are hosting your own private git repo for those reasons, and/or are using the encryption features of nano-git-db enterprise edition.)
+	- You have privacy/security/longevity concerns about your data living on someone else's server. (This would mostly be relevant if you are hosting your own private git repo for those reasons, and/or are using the encryption features of gitniblet enterprise edition.)
 
 - GitHub (et. al) Issues:
 
@@ -108,7 +108,7 @@ Examples:
 
 ## Installing
 
-There's no installer yet. It needs `ngdb` and `shcl` on the PATH, from [nano-git-db](https://github.com/yottacore/nano-git-db) and [shcl](https://github.com/yottacore/shcl).
+There's no installer yet. It needs `gitniblet` and `shcl` on the PATH, from [gitniblet](https://github.com/yottacore/gitniblet) and [shcl](https://github.com/yottacore/shcl).
 
 ## Developing
 
@@ -118,24 +118,24 @@ The files a deployment uses are the working files here:
 | :---    | :---
 | Config  | `source/config.shcl`
 | Schema  | `source/ddl.shcl`, plus `source/ddl.queries.shcl` for named queries
-| Tx-log  | `ngdb/issue-tracker_test/txlog.csv`
-| View    | `~/.cache/ngdb/issue-tracker_test/local.sqlite`
+| Tx-log  | `gitniblet/issue-tracker_test/txlog.csv`
+| View    | `~/.cache/gitniblet/issue-tracker_test/local.sqlite`
 
-A real deployment can keep these anywhere. `utility/ngdb-dev.bash` runs ngdb against the config and adds the database name to each command:
+A real deployment can keep these anywhere. `utility/gitniblet-dev.bash` runs gitniblet against the config and adds the database name to each command:
 
 ~~~bash
-utility/ngdb-dev.bash --tui
-utility/ngdb-dev.bash create issue ref=2026102508172800 title="First item" type=4 status=19
-utility/ngdb-dev.bash query "SELECT ref, title FROM issue WHERE is_deleted = 0"
+utility/gitniblet-dev.bash --tui
+utility/gitniblet-dev.bash create issue ref=2026102508172800 title="First item" type=4 status=19
+utility/gitniblet-dev.bash query "SELECT ref, title FROM issue WHERE is_deleted = 0"
 ~~~
 
-`cicd/cicd.bash` lints and tests, then commits and pushes. `--help` lists its flags. Lint and tests run in a docker image with shcl and ngdb built from pinned commits on their `dev` branches, and `cicd/bump-pins.bash` moves those pins. Without docker they run on your own PATH. Day to day work goes on `dev`, and `main` takes releases.
+`cicd/cicd.bash` lints and tests, then commits and pushes. `--help` lists its flags. Lint and tests run in a docker image with shcl and gitniblet built from pinned commits on their `dev` branches, and `cicd/bump-pins.bash` moves those pins. Without docker they run on your own PATH. Day to day work goes on `dev`, and `main` takes releases.
 
 `git config core.hooksPath cicd/hooks` turns on the pre-push hook, which runs `cicd.bash --merge-gate` before a push to `main`, unless the push changes only docs.
 
-## Support NGDB Issue Tracker
+## Support GITNIBLET Issue Tracker
 
-NGDB Issue Tracker is written and maintained in spare time. If it saves you time, these keep it going:
+GITNIBLET Issue Tracker is written and maintained in spare time. If it saves you time, these keep it going:
 
 - [GitHub Sponsors](https://github.com/sponsors/jim-collier)
 
@@ -146,9 +146,9 @@ NGDB Issue Tracker is written and maintained in spare time. If it saves you time
 > Copyright © 2026 Jim Collier [ID: 2უNაɘ«҂թȹɤξπ๙¿ձϖ]<br />
 > Licensed under the [GNU Affero General Public License v3.0](license.md) (`AGPL-3.0-only`).<br />
 > No warranty.<br />
-> NGDB Issue Tracker™ is a [trademark](trademark.md) of Jim Collier.
+> GITNIBLET Issue Tracker™ is a [trademark](trademark.md) of Jim Collier.
 
-The AGPL's network-use "SaaS" clause (what specifically differentiates it from regular GPL) is deliberate. If you run a modified `nano-git-db` as a network service - which anyone is free and encouraged to do - you must offer users your source so that others can continue to build on your work, and so on.
+The AGPL's network-use "SaaS" clause (what specifically differentiates it from regular GPL) is deliberate. If you run a modified `gitniblet` as a network service - which anyone is free and encouraged to do - you must offer users your source so that others can continue to build on your work, and so on.
 <!--
 > Licensed under the [MIT License](https://mit-license.org/)<br />
 > SPDX-License-Identifier: `MIT`.<br />

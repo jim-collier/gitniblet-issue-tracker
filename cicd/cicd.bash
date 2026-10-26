@@ -30,7 +30,7 @@
 #•••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 ## Constants
 if [[ -z "${doQuietly+x}" ]]; then
-	declare -r  projectName="ngdb-issue-tracker"
+	declare -r  projectName="gitniblet-issue-tracker"
 	declare     dirPath_Base=".."
 	declare     gitAutomationScript="${dirPath_Base}/cicd/utility/n8git_backup-and-publish"
 	declare  -i doQuietly=0
@@ -44,7 +44,7 @@ if [[ -z "${doQuietly+x}" ]]; then
 	## Lint and tests run in the pinned image from cicd/container/ unless --no-container.
 	## No docker, or an image that won't build, falls back to this host with one line.
 	declare  -i inContainer=0; [[ "${NIT_IN_CONTAINER:-}" == "1" ]] && inContainer=1
-	declare -r  containerImage="ngdb-issue-tracker-cicd"
+	declare -r  containerImage="gitniblet-issue-tracker-cicd"
 	declare -r  containerEngine="${NIT_DOCKER:-docker}"  ## Anything that takes docker's arguments
 	declare     aliasNote=""
 	declare -r  thisVersion="1.0.0-beta1"
@@ -74,7 +74,7 @@ fAbout(){ { ((doQuietly)) || ((wasShown_About)); } && return; wasShown_About=1;
 	fEcho_Clean "CI/CD for the issue tracker's database definition:"
 	fEcho_Clean "  • Fast-forward from the remote first, so what's tested is what gets pushed."
 	fEcho_Clean "  • Lint the bash scripts, the docs and the shcl files."
-	fEcho_Clean "  • Test the DDL, its named queries and the tracked tx-log through ngdb."
+	fEcho_Clean "  • Test the DDL, its named queries and the tracked tx-log through gitniblet."
 	fEcho_Clean "  • Back up, commit and push."
 	#           X-------------------------------------------------------------------------------X
 	fEcho_Clean "" ;:;}
@@ -98,7 +98,7 @@ fSyntax(){  { ((doQuietly)) || ((wasShown_Syntax)); } && return; wasShown_Syntax
 	fEcho_Clean "                      These 3 never sync, commit, push or prompt."
 	fEcho_Clean "      --no-publish    Skip backup + publish: no commit, no push."
 	fEcho_Clean "      --no-sync       Skip the fast-forward from the remote."
-	fEcho_Clean "      --no-container  Lint and test on this host, with its own shcl and ngdb."
+	fEcho_Clean "      --no-container  Lint and test on this host, with its own shcl and gitniblet."
 	fEcho_Clean "      --no-remote     Taken. Nothing runs on the other boxes yet."
 	fEcho_Clean "      --keep-temp     Keep the run folder and the run's container, and print"
 	fEcho_Clean "                      where they are."
@@ -112,10 +112,10 @@ fSyntax(){  { ((doQuietly)) || ((wasShown_Syntax)); } && return; wasShown_Syntax
 	fEcho_Clean "Each run works in \${HOST_TEMP}/${projectName}/<stamp>_<NNN>/, with TMPDIR"
 	fEcho_Clean "pointed at it, and removes it at the end, on failure and Ctrl+C too. It also"
 	fEcho_Clean "removes run folders older than 2 days whose run.pid is gone. Every step runs"
-	fEcho_Clean "at nice 19 and idle I/O, and ngdb gets half the CPUs, or a quarter when the"
+	fEcho_Clean "at nice 19 and idle I/O, and gitniblet gets half the CPUs, or a quarter when the"
 	fEcho_Clean "1-minute load is over half of them."
 	fEcho_Clean ""
-	fEcho_Clean "Lint and tests run in an image with shcl and ngdb built from the dev commits"
+	fEcho_Clean "Lint and tests run in an image with shcl and gitniblet built from the dev commits"
 	fEcho_Clean "pinned in cicd/container/Dockerfile, built the first time it's needed."
 	fEcho_Clean "cicd/bump-pins.bash moves the pins. No docker, or an image that won't build,"
 	fEcho_Clean "falls back to this host. At the end the run's container goes, then this"
@@ -231,13 +231,13 @@ fMain(){
 		fi
 
 		local containerLine
-		if ((! doContainer)); then containerLine="Container: off (--no-container), so lint and tests run on this host, with its own shcl and ngdb."
+		if ((! doContainer)); then containerLine="Container: off (--no-container), so lint and tests run on this host, with its own shcl and gitniblet."
 		elif fContainer_Check; then
 			useContainer=1
-			containerLine="Container: ${containerTag} for lint and tests, at --cpus ${NIT_JOBS_MAX}, with shcl ${pinShcl:0:8} and ngdb ${pinNgdb:0:8} from their dev branches."
-		else containerLine="Container: ${containerWhy}, so lint and tests run on this host, with its own shcl and ngdb."
+			containerLine="Container: ${containerTag} for lint and tests, at --cpus ${NIT_JOBS_MAX}, with shcl ${pinShcl:0:8} and gitniblet ${pinGitniblet:0:8} from their dev branches."
+		else containerLine="Container: ${containerWhy}, so lint and tests run on this host, with its own shcl and gitniblet."
 		fi
-		local -a headerLines=("CPUs: ${NIT_CORES}, load ${NIT_LOAD}. ngdb gets half, or a quarter when the load is over half.")
+		local -a headerLines=("CPUs: ${NIT_CORES}, load ${NIT_LOAD}. gitniblet gets half, or a quarter when the load is over half.")
 		headerLines+=("${containerLine}")
 		[[ -z "${aliasNote}" ]]  ||  headerLines+=("${aliasNote}")
 		fSteps_Header "${projectName} CI/CD, ${runMode}" "${headerLines[@]}"
@@ -275,7 +275,7 @@ fMain(){
 }
 
 
-## The database tests, then the pipeline's own. Says which shcl and ngdb ran them.
+## The database tests, then the pipeline's own. Says which shcl and gitniblet ran them.
 fTests(){
 	local -a dbAreas=() area
 	local -i doCicd=1
@@ -289,10 +289,10 @@ fTests(){
 		return 0
 	fi
 	fMustBeInPath shcl
-	fMustBeInPath "${NGDB_BIN:-ngdb}"
+	fMustBeInPath "${GITNIBLET_BIN:-gitniblet}"
 	local where="this host's own, not the pinned builds"
-	((! inContainer))  ||  where="pinned at shcl ${NIT_PIN_SHCL:0:8} and ngdb ${NIT_PIN_NGDB:0:8}"
-	fEcho_Clean "Tools: $(shcl --version 2>&1 | head -1); $("${NGDB_BIN:-ngdb}" --version 2>&1 | head -1); ${where}"
+	((! inContainer))  ||  where="pinned at shcl ${NIT_PIN_SHCL:0:8} and gitniblet ${NIT_PIN_GITNIBLET:0:8}"
+	fEcho_Clean "Tools: $(shcl --version 2>&1 | head -1); $("${GITNIBLET_BIN:-gitniblet}" --version 2>&1 | head -1); ${where}"
 	if ((! ${#testAreas[@]} || ${#dbAreas[@]})); then
 		"${dirPath_Base}/cicd/utility/ddl-test.bash" "${dbAreas[@]}"  ||  fThrowError "Tests failed; the output is above."
 	fi
@@ -345,7 +345,7 @@ fSync(){
 	fEcho_Clean "Fast-forwarded ${behind} commit(s) from ${upstream}."
 }
 
-## shellcheck on the first-party bash, markdownlint on the docs. shcl and ngdb
+## shellcheck on the first-party bash, markdownlint on the docs. shcl and gitniblet
 ## checks of the database files are tests, so they sit in ddl-test.bash.
 ## n8git_backup-and-publish and gfs-rotate.bash are copied as-is from elsewhere,
 ## and the license, contributing and conduct docs are left as their templates came.
@@ -368,7 +368,7 @@ fLint(){
 #••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 ## Sets containerTag and the pins, or containerWhy when the run should stay on
 ## this host. Prints nothing, so the first section can say which it is.
-declare containerTag="" containerWhy="" pinShcl="" pinNgdb="" runStamp=""
+declare containerTag="" containerWhy="" pinShcl="" pinGitniblet="" runStamp=""
 declare -i useContainer=0  dockerUsed=0  imagePassed=0  ## For the cleanup at exit
 fContainer_Check(){
 	if [[ "$(uname -m)" != "x86_64" ]]; then containerWhy="the image is x86_64 only"
@@ -382,8 +382,8 @@ fContainer_Check(){
 	## Called as an if condition, where set -e is off, so a throw has to exit.
 	[[ -f "${recipe}/Dockerfile" ]]  ||  { fThrowError "Missing the container recipe: '${recipe}/Dockerfile'."; exit 1; }
 	pinShcl="$(sed -n 's/^ARG SHCL_REV=//p' "${recipe}/Dockerfile")"
-	pinNgdb="$(sed -n 's/^ARG NGDB_REV=//p' "${recipe}/Dockerfile")"
-	[[ "${pinShcl}" =~ ^[0-9a-f]{40}$ && "${pinNgdb}" =~ ^[0-9a-f]{40}$ ]]  ||  { fThrowError "SHCL_REV and NGDB_REV in '${recipe}/Dockerfile' have to be full commits."; exit 1; }
+	pinGitniblet="$(sed -n 's/^ARG GITNIBLET_REV=//p' "${recipe}/Dockerfile")"
+	[[ "${pinShcl}" =~ ^[0-9a-f]{40}$ && "${pinGitniblet}" =~ ^[0-9a-f]{40}$ ]]  ||  { fThrowError "SHCL_REV and GITNIBLET_REV in '${recipe}/Dockerfile' have to be full commits."; exit 1; }
 
 	## Tagged by the recipe's hash, so an edited recipe or pin can't run on the old image.
 	containerTag="${containerImage}:$(cat "${recipe}/Dockerfile" "${recipe}/package.json" "${recipe}/package-lock.json" | sha256sum | cut -c1-12)"
@@ -399,7 +399,7 @@ fContainer_Ready(){
 	if ! nice -n 19 "${containerEngine}" build --label "dev.project=${projectName}" --label "dev.run=${runStamp}" \
 		--build-arg "JOBS=${NIT_JOBS}" -t "${containerTag}" "${dirPath_Base}/cicd/container"
 	then
-		fEcho_Clean "Container: ${containerTag} didn't build, so lint and tests run on this host, with its own shcl and ngdb."; return 1
+		fEcho_Clean "Container: ${containerTag} didn't build, so lint and tests run on this host, with its own shcl and gitniblet."; return 1
 	fi
 }
 
@@ -638,7 +638,7 @@ fi
 
 cd "${meDir}"
 
-## Half the CPUs, a quarter when busy, exported as GOMAXPROCS for ngdb. Also
+## Half the CPUs, a quarter when busy, exported as GOMAXPROCS for gitniblet. Also
 ## drops this run to nice 19 and idle I/O, which every step inherits.
 # shellcheck source=utility/include/cpu-limit.bash
 source "${meDir}/utility/include/cpu-limit.bash"
@@ -653,4 +653,4 @@ fMain "${@}"
 
 
 ##	Script history:
-##		- 20261025 JC: Created from the nano-git-db cicd.bash, for a project with nothing to compile.
+##		- 20261025 JC: Created from the gitniblet cicd.bash, for a project with nothing to compile.

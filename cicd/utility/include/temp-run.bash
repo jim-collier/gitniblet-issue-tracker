@@ -4,8 +4,8 @@
 ##	Purpose:
 ##		Run folders and guarded removal, per the shared Temp files and Safe
 ##		removal rules. Sourced by cicd.bash and its helpers. Kept bash 3.2 safe,
-##		like the nano-git-db copy it came from.
-##		- fTempRun_Make: makes ${HOST_TEMP}/ngdb-issue-tracker/<stamp>_<NNN>/ with
+##		like the gitniblet copy it came from.
+##		- fTempRun_Make: makes ${HOST_TEMP}/gitniblet-issue-tracker/<stamp>_<NNN>/ with
 ##		  run.pid in it, and prints its path.
 ##		- fTempDir_Make LABEL: a folder for a helper. Inside the cicd run's folder
 ##		  (NIT_RUN_DIR) when there is one, else a run folder of its own.
@@ -19,7 +19,7 @@
 ##		https://mit-license.org/
 ##	SPDX-License-Identifier: MIT
 
-tempProject="ngdb-issue-tracker"
+tempProject="gitniblet-issue-tracker"
 
 ## Resolved once, since macOS's temp folder sits behind the /var link.
 HOST_TEMP="${HOST_TEMP:-${TMPDIR:-/tmp}}"
@@ -82,4 +82,4 @@ fSafeRm(){
 
 ##	History:
 ##		- 20261025 JC: Created, for the run folder and the guard every cicd script shares.
-##		- 20261025 JC: Copied from nano-git-db for ngdb-issue-tracker.
+##		- 20261025 JC: Copied from gitniblet for gitniblet-issue-tracker.

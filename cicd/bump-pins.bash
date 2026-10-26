@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-##	Purpose: Move the shcl and ngdb pins in cicd/container/Dockerfile to a
+##	Purpose: Move the shcl and gitniblet pins in cicd/container/Dockerfile to a
 ##		commit on each one's dev branch, the newest by default. The tests run
 ##		against those builds, never a release. A full run after a bump builds
 ##		the new image.
-##	Usage: bump-pins.bash [shcl|ngdb] [REV]
+##	Usage: bump-pins.bash [shcl|gitniblet] [REV]
 ##		No name moves both to the newest dev. REV needs a name, and is a full
 ##		40-character commit.
 ##	Env:
@@ -20,12 +20,12 @@ here="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 pins="${NIT_PINS_FILE:-${here}/container/Dockerfile}"
 fDie(){ printf 'bump-pins: %s\n' "${*}" >&2; exit 1; }
 
-declare -A url=([shcl]="https://github.com/yottacore/shcl" [ngdb]="https://github.com/yottacore/nano-git-db")
-declare -A arg=([shcl]="SHCL_REV" [ngdb]="NGDB_REV")
+declare -A url=([shcl]="https://github.com/yottacore/shcl" [gitniblet]="https://github.com/yottacore/gitniblet")
+declare -A arg=([shcl]="SHCL_REV" [gitniblet]="GITNIBLET_REV")
 
-names=(shcl ngdb); rev=""
+names=(shcl gitniblet); rev=""
 if (($#)); then
-	[[ -n "${url[${1}]:-}" ]]  ||  fDie "unknown name '${1}'; it's shcl or ngdb"
+	[[ -n "${url[${1}]:-}" ]]  ||  fDie "unknown name '${1}'; it's shcl or gitniblet"
 	names=("${1}"); rev="${2:-}"
 fi
 [[ -f "${pins}" ]]  ||  fDie "no ${pins}"

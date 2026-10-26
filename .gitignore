@@ -1,7 +1,7 @@
 # CI/CD run logs, rotated in place
 /cicd/artifacts/
 
-# ngdb views and keys, in case one ends up in the repo
+# gitniblet views and keys, in case one ends up in the repo
 *.sqlite
 *.sqlite-journal
 *.sqlite-wal

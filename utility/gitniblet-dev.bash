@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
 
 ##	Purpose:
-##		Run ngdb against the database source/config.shcl describes. ngdb reads a
+##		Run gitniblet against the database source/config.shcl describes. gitniblet reads a
 ##		registry record with absolute paths, under <registry>/<name>/config.shcl,
 ##		and writes last_opened back into it. So this resolves config.shcl into such
-##		a record beside the SQLite view, rather than letting ngdb touch the tracked
-##		file, then runs ngdb with that registry.
+##		a record beside the SQLite view, rather than letting gitniblet touch the tracked
+##		file, then runs gitniblet with that registry.
 ##		- A relative path in config.shcl is relative to that file. ${HOME} is the
 ##		  one variable expanded.
 ##		- The database name goes in after any verb that takes one, so
-##		  "ngdb-dev.bash create issue title=x" is "ngdb create <name> issue title=x".
+##		  "gitniblet-dev.bash create issue title=x" is "gitniblet create <name> issue title=x".
 ##		- sync is refused, since it commits and pushes the log on whatever branch
 ##		  the dev repo has checked out.
 ##	Syntax:
-##		ngdb-dev.bash [--config-file=PATH] [--print] <ngdb verb> [args...]
+##		gitniblet-dev.bash [--config-file=PATH] [--print] <gitniblet verb> [args...]
 ##		  --config-file  another config.shcl, such as a test run's copy
 ##		  --print        print the resolved paths and stop
 ##	Env:
-##		NGDB_BIN: the ngdb binary, default the one on PATH.
+##		GITNIBLET_BIN: the gitniblet binary, default the one on PATH.
 ##	Copyright © 2026 Jim Collier [ID: 2უNაɘ«҂թȹɤξπ๙¿ձϖ]
 ##	Licensed under the GNU Affero General Public License v3.0.
 ##	SPDX-License-Identifier: AGPL-3.0-only
@@ -27,7 +27,7 @@ set -Eeuo pipefail
 
 meDir="$(cd -P -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 cfg="${meDir}/../source/config.shcl"
-ngdbBin="${NGDB_BIN:-ngdb}"
+gitnibletBin="${GITNIBLET_BIN:-gitniblet}"
 doPrint=0
 
 while (($#)); do case "${1}" in
@@ -37,7 +37,7 @@ while (($#)); do case "${1}" in
 	*)                break ;;
 esac; done
 
-fDie(){ printf 'ngdb-dev: %s\n' "${1}" >&2; exit 1; }
+fDie(){ printf 'gitniblet-dev: %s\n' "${1}" >&2; exit 1; }
 
 [[ -f "${cfg}" ]]  ||  fDie "no config file at ${cfg}"
 command -v shcl > /dev/null  ||  fDie "shcl isn't on PATH"
@@ -74,7 +74,7 @@ fi
 
 [[ -f "${ddlPath}" ]]  ||  fDie "no DDL at ${ddlPath}"
 mkdir -p -- "${logDir}" "$(dirname -- "${record}")"
-## Edits only these keys, so ngdb's last_opened survives.
+## Edits only these keys, so gitniblet's last_opened survives.
 out="$(shcl set --write --no-banner \
 	--set-literal "name=${name}" \
 	--set-literal "ddl_path=${ddlPath}" \
@@ -89,7 +89,7 @@ case "${verb}" in
 		shift; set -- "${verb}" "${name}" "${@}" ;;
 esac
 
-exec "${ngdbBin}" --config "${registry}" "${@}"
+exec "${gitnibletBin}" --config "${registry}" "${@}"
 
 
 ##	History:

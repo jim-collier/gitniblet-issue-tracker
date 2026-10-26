@@ -110,14 +110,14 @@ fT_HookNewAndDelete(){
 }
 
 fT_BumpPins(){
-	local pins="${work}/Dockerfile" want="0123456789abcdef0123456789abcdef01234567" ngdbBefore
+	local pins="${work}/Dockerfile" want="0123456789abcdef0123456789abcdef01234567" gitnibletBefore
 	cp -- "${repoDir}/cicd/container/Dockerfile" "${pins}"
-	ngdbBefore="$(grep '^ARG NGDB_REV=' "${pins}")"
+	gitnibletBefore="$(grep '^ARG GITNIBLET_REV=' "${pins}")"
 	NIT_PINS_FILE="${pins}" "${repoDir}/cicd/bump-pins.bash" shcl "${want}" > /dev/null
 	grep -qxF "ARG SHCL_REV=${want}" "${pins}"  ||  { echo "SHCL_REV didn't move"; return 1; }
-	grep -qxF "${ngdbBefore}" "${pins}"  ||  { echo "NGDB_REV moved too"; return 1; }
-	if NIT_PINS_FILE="${pins}" "${repoDir}/cicd/bump-pins.bash" ngdb abc123 > /dev/null 2>&1; then echo "took a short commit"; return 1; fi
-	grep -qxF "${ngdbBefore}" "${pins}"  ||  { echo "a refused bump changed NGDB_REV"; return 1; }
+	grep -qxF "${gitnibletBefore}" "${pins}"  ||  { echo "GITNIBLET_REV moved too"; return 1; }
+	if NIT_PINS_FILE="${pins}" "${repoDir}/cicd/bump-pins.bash" gitniblet abc123 > /dev/null 2>&1; then echo "took a short commit"; return 1; fi
+	grep -qxF "${gitnibletBefore}" "${pins}"  ||  { echo "a refused bump changed GITNIBLET_REV"; return 1; }
 }
 
 ## A nested run of the real cicd.bash, with its own temp root and log folder,
@@ -129,9 +129,9 @@ fT_NoDocker(){
 		HOST_TEMP="${work}/nodocker-temp" NIT_LOG_DIR="${work}/nodocker-logs" NIT_DOCKER="nit-no-such-docker" \
 		"${repoDir}/cicd/cicd.bash" --backlog-run-quick config > "${out}" 2>&1
 	then cat "${out}"; return 1; fi
-	grep -qxF "Container: no nit-no-such-docker, so lint and tests run on this host, with its own shcl and ngdb." "${out}"  ||  { cat "${out}"; return 1; }
+	grep -qxF "Container: no nit-no-such-docker, so lint and tests run on this host, with its own shcl and gitniblet." "${out}"  ||  { cat "${out}"; return 1; }
 	grep -qF "this host's own, not the pinned builds" "${out}"  ||  { echo "no Tools line for this host"; return 1; }
-	[[ -z "$(ls -A "${work}/nodocker-temp/ngdb-issue-tracker" 2> /dev/null)" ]]  ||  { echo "left its run folder behind"; return 1; }
+	[[ -z "$(ls -A "${work}/nodocker-temp/gitniblet-issue-tracker" 2> /dev/null)" ]]  ||  { echo "left its run folder behind"; return 1; }
 }
 
 declare -i nPass=0 nFail=0 nSkip=0 rc

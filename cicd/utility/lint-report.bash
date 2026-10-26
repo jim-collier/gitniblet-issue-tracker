@@ -81,7 +81,7 @@ if ((check)) && ((! noMark)) && [[ -n "$ts" ]]; then
 fi
 
 ##	Distil what the run's checks flag: shellcheck's SCnnnn codes, markdownlint's
-##	MDnnn rules, shcl's Error/Warning lines with their codes, ngdb's "warning:"
+##	MDnnn rules, shcl's Error/Warning lines with their codes, gitniblet's "warning:"
 ##	lines, and any FAIL or WARN test line. shcl's own "ok (0 diagnostic(s))" and
 ##	the step lines are dropped.
 warns="$(grep -nE '\bSC[0-9]{4}\b|\bMD[0-9]{3}\b|: (Error|Warning): [EVW][0-9]{3}|warning:|^(FAIL|WARN) ' "$log" 2>/dev/null \
@@ -100,4 +100,4 @@ fi
 
 ##	Script history:
 ##		- 20260709: Created (adapted from the SilkTerm cicd for Go tooling).
-##		- 20261025: Copied from nano-git-db; patterns for shellcheck, markdownlint, shcl and ngdb.
+##		- 20261025: Copied from gitniblet; patterns for shellcheck, markdownlint, shcl and gitniblet.

@@ -1,5 +1,5 @@
 {
-	"name": "ngdb-issue-tracker-cicd-markdownlint",
+	"name": "gitniblet-issue-tracker-cicd-markdownlint",
 	"private": true,
 	"description": "markdownlint-cli for the cicd/container image.",
 	"dependencies": {
