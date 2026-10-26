@@ -24,62 +24,6 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 
 ## Issues
 
-- 20261025-081728: A CI/CD pipeline kicked off by a bash script (`cicd/cicd.bash`): builds, tests, and can commit and push.
-	- Status: Waiting on UAT
-	- Progress log:
-		- 2026-10-25: In. There's nothing to compile, so it syncs, lints, tests, then backs up, commits, and pushes. It takes the shared flags, step lines, run folder, and CPU limits.
-	- Test case: `cicd/utility/ddl-test.bash`, IDs dedqv to dedra.
-
-- Feature: Write the first schema, from the backlog template
-	- ID: 2026102509013420
-	- Type: Feature
-	- Status: Waiting on UAT
-	- Priority: High
-	- Opened: 20261025-090134
-	- Opened by: JC
-	- Requirements:
-		- Start from the nano-git-db issue-tracker demo, which this replaces.
-		- An issue has the template's rows. Type, status, priority, and effort are pick lists.
-		- Decisions, prereq and related links, comments, and an audit trail.
-		- Named queries for open, waiting, critical and high, closed, and everything.
-	- Progress log:
-		- 2026-10-25: Drafted in `source/ddl.shcl` and `source/ddl.queries.shcl`. Field names and lists are a first pass.
-	- Decisions:
-		- Lists use the shcl 2.x form, since that's what nano-git-db reads.
-		- Git sync is off in the schema until a deployment can set it in its own config.
-	- Test case: dedqx, dedqy, dedqz, dedr0 to dedr7.
-
-- Task: Set up the project structure, config, and dev wrapper
-	- ID: 2026102509013430
-	- Type: Task
-	- Status: Waiting on UAT
-	- Priority: High
-	- Opened: 20261025-090134
-	- Opened by: JC
-	- Progress log:
-		- 2026-10-25: `source/config.shcl`, the log folder, `utility/ngdb-dev.bash`, the license, and the filled-in templates are in. `dev` is the working branch.
-	- Test case: dedqv, dedqw, dedr9.
-
-- CICD reset: CICD process gaps
-	- ID: 2026102509013520
-	- Type: Enhancement
-	- Status: Waiting on UAT
-	- Needs hand testing: A default run with publish, from a tree with no edits but the ones meant to go, since publish commits and pushes everything pending.
-	- Priority: Avg
-	- Opened: 20261025-090134
-	- Opened by: JC
-	- Requirements:
-		- Sweeping override, 2026-10-24: this supersedes any earlier decision on this project that conflicts with it.
-		- Pin the shcl and ngdb versions the tests run against. Today the run prints them.
-		- A first `--backlog-run-full` and a full run, watched end to end.
-	- Progress log:
-		- 2026-10-25: shcl and ngdb are pinned to dev commits in `cicd/container/Dockerfile`, and the tests run against those builds. `cicd/bump-pins.bash` moves either pin, to the newest dev commit by default. The Tests step says which builds ran it, pinned or the host's own.
-		- 2026-10-25: Watched end to end: `--backlog-run-full`, `--merge-gate`, `--backlog-run-quick`, `--no-container`, and the default run with `--no-publish`. All passed. Publish wasn't run, since it would commit edits that aren't part of this.
-	- Decisions:
-		- Pins name dev commits, never a release, and move forward through the bump script.
-	- Branch: r1025
-	- Test case: deegg.
-
 - nano-git-db: a view rebuilt from the log stamps every row's `date_created` with the replay time
 	- ID: 2026102509013440
 	- Type: Bug
@@ -230,6 +174,70 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 - 20261025-081804: Dev-environment install script (Linux bash, macOS sh, Windows PowerShell), runnable via a single `curl`/`wget` and documented under "how to develop". Clones main, installs dependencies, and states what it will do with an option to abort.
 
 - 20261025-081811: Release-install script per platform, runnable via a single `curl`/`wget` and documented under "how to install". Downloads, installs, and runs the latest release, with an option to abort.
+
+- Feature: Write the first schema, from the backlog template
+	- ID: 2026102509013420
+	- Type: Feature
+	- Status: Done
+	- Priority: High
+	- Opened: 20261025-090134
+	- Opened by: JC
+	- Requirements:
+		- Start from the nano-git-db issue-tracker demo, which this replaces.
+		- An issue has the template's rows. Type, status, priority, and effort are pick lists.
+		- Decisions, prereq and related links, comments, and an audit trail.
+		- Named queries for open, waiting, critical and high, closed, and everything.
+	- Progress log:
+		- 2026-10-25: Drafted in `source/ddl.shcl` and `source/ddl.queries.shcl`. Field names and lists are a first pass.
+		- 2026-10-25: Stand-in for the hand test: through the dev wrapper, built and replayed a scratch copy, added an issue with lookup values, read it back, and opened the TUI, which showed it under Open issues. Every template row has a field, and the status list matches the template. The full run passed.
+	- Decisions:
+		- Lists use the shcl 2.x form, since that's what nano-git-db reads.
+		- Git sync is off in the schema until a deployment can set it in its own config.
+	- Test case: dedqx, dedqy, dedqz, dedr0 to dedr7.
+	- Closed: 20261025-221203
+
+- Task: Set up the project structure, config, and dev wrapper
+	- ID: 2026102509013430
+	- Type: Task
+	- Status: Done
+	- Priority: High
+	- Opened: 20261025-090134
+	- Opened by: JC
+	- Progress log:
+		- 2026-10-25: `source/config.shcl`, the log folder, `utility/ngdb-dev.bash`, the license, and the filled-in templates are in. `dev` is the working branch.
+		- 2026-10-25: Stand-in for the hand test: the wrapper with `--config-file` on a scratch config ran `--print`, `build`, `replay`, `create`, `query` and `--tui`, and refused `sync`. The full run passed.
+	- Test case: dedqv, dedqw, dedr9.
+	- Closed: 20261025-221203
+
+- 20261025-081728: A CI/CD pipeline kicked off by a bash script (`cicd/cicd.bash`): builds, tests, and can commit and push.
+	- Status: Done
+	- Progress log:
+		- 2026-10-25: In. There's nothing to compile, so it syncs, lints, tests, then backs up, commits, and pushes. It takes the shared flags, step lines, run folder, and CPU limits.
+		- 2026-10-25: Closed with 2026102509013520. A default run with publish, in a scratch clone with its own remote, linted, tested, made the backup, committed and pushed.
+	- Test case: `cicd/utility/ddl-test.bash`, IDs dedqv to dedra.
+	- Closed: 20261025-221203
+
+- CICD reset: CICD process gaps
+	- ID: 2026102509013520
+	- Type: Enhancement
+	- Status: Done
+	- Priority: Avg
+	- Opened: 20261025-090134
+	- Opened by: JC
+	- Requirements:
+		- Sweeping override, 2026-10-24: this supersedes any earlier decision on this project that conflicts with it.
+		- Pin the shcl and ngdb versions the tests run against. Today the run prints them.
+		- A first `--backlog-run-full` and a full run, watched end to end.
+	- Progress log:
+		- 2026-10-25: shcl and ngdb are pinned to dev commits in `cicd/container/Dockerfile`, and the tests run against those builds. `cicd/bump-pins.bash` moves either pin, to the newest dev commit by default. The Tests step says which builds ran it, pinned or the host's own.
+		- 2026-10-25: Watched end to end: `--backlog-run-full`, `--merge-gate`, `--backlog-run-quick`, `--no-container`, and the default run with `--no-publish`. All passed. Publish wasn't run, since it would commit edits that aren't part of this.
+		- 2026-10-25: Stand-in for the hand test: a default run with publish, minus sync, in a scratch clone of r1025 with its own bare remote. It passed lint and tests, wrote and rotated the backup, committed, and pushed. The publish step itself didn't change this round.
+	- Decisions:
+		- Pins name dev commits, never a release, and move forward through the bump script.
+		- Closed on that stand-in rather than a run in the real tree, since publish would take along the uncommitted design.md edit.
+	- Branch: r1025
+	- Test case: deegg.
+	- Closed: 20261025-221203
 
 - CICD reset: containers
 	- ID: 2026102509013500
