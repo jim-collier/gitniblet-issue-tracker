@@ -129,7 +129,9 @@ utility/ngdb-dev.bash create issue ref=2026102508172800 title="First item" type=
 utility/ngdb-dev.bash query "SELECT ref, title FROM issue WHERE is_deleted = 0"
 ~~~
 
-`cicd/cicd.bash` lints and tests, then commits and pushes. `--help` lists its flags. Day to day work goes on `dev`, and `main` takes releases.
+`cicd/cicd.bash` lints and tests, then commits and pushes. `--help` lists its flags. Lint and tests run in a docker image with shcl and ngdb built from pinned commits on their `dev` branches, and `cicd/bump-pins.bash` moves those pins. Without docker they run on your own PATH. Day to day work goes on `dev`, and `main` takes releases.
+
+`git config core.hooksPath cicd/hooks` turns on the pre-push hook, which runs `cicd.bash --merge-gate` before a push to `main`, unless the push changes only docs.
 
 ## Support NGDB Issue Tracker
 
