@@ -9,13 +9,13 @@ Design, requirements, and direction. The active pre-v1.0.0 bug/feature task list
 
 ## Assumptions
 
-- nano-git-db (ngdb) does all the work. This project is its data: a schema, named queries, a config, and a tx-log.
+- gitniblet (gitniblet) does all the work. This project is its data: a schema, named queries, a config, and a tx-log.
 
-- It replaces the issue-tracker demo in nano-git-db, which gets removed. It started from that demo's files.
+- It replaces the issue-tracker demo in gitniblet, which gets removed. It started from that demo's files.
 
-- It's developed alongside shcl, shclwrap, and nano-git-db. A gap found here is filed here, then fixed there.
+- It's developed alongside shcl, shclwrap, and gitniblet. A gap found here is filed here, then fixed there.
 
-- Its main job is to push those projects to feature complete. In order: shcl, shclwrap, nano-git-db, then nano-git-db's enterprise edition. It should also be a good issue tracker.
+- Its main job is to push those projects to feature complete. In order: shcl, shclwrap, gitniblet, then gitniblet's enterprise edition. It should also be a good issue tracker.
 
 - The schema, the TUI, the GUI, the web UI, and the MCP server grow together. The GUI is the enterprise edition's native one, used here from early on.
 
@@ -30,10 +30,10 @@ The working files are laid out the way a real deployment would be. A deployment 
 | Config  | `source/config.shcl`
 | Schema  | `source/ddl.shcl`
 | Queries | `source/ddl.queries.shcl`, found by the schema's base name
-| Tx-log  | `ngdb/issue-tracker_test/txlog.csv`
-| View    | `${HOME}/.cache/ngdb/issue-tracker_test/local.sqlite`
+| Tx-log  | `gitniblet/issue-tracker_test/txlog.csv`
+| View    | `${HOME}/.cache/gitniblet/issue-tracker_test/local.sqlite`
 
-- `utility/ngdb-dev.bash` runs ngdb against the config.
+- `utility/gitniblet-dev.bash` runs gitniblet against the config.
 
 - `cicd/` has the pipeline and its tests.
 
@@ -49,9 +49,9 @@ The working files are laid out the way a real deployment would be. A deployment 
 
 - Decisions get their own table, not comments, since a fix has to find and respect them. Comments are the progress log.
 
-- Prereq and related links are rows in `issue_link`, one per link. That works today without ngdb's many-to-many support.
+- Prereq and related links are rows in `issue_link`, one per link. That works today without gitniblet's many-to-many support.
 
-- Lists in the schema use ngdb's shcl 2.x form, bare and comma separated. shcl 3 refuses that form, and ngdb doesn't read the bracketed one yet. So the schema follows the reader that opens it. nano-git-db is moving to shcl 3 through shclwrap, and the schema switches to `[a, b]` then.
+- Lists in the schema use gitniblet's shcl 2.x form, bare and comma separated. shcl 3 refuses that form, and gitniblet doesn't read the bracketed one yet. So the schema follows the reader that opens it. gitniblet is moving to shcl 3 through shclwrap, and the schema switches to `[a, b]` then.
 
 - Git sync is off in the schema. The test log lives inside this repo, and a sync would commit and push to whatever branch is checked out.
 
@@ -59,7 +59,7 @@ The working files are laid out the way a real deployment would be. A deployment 
 
 ### Software stack
 
-- ngdb, a Go program, reads the schema and keeps the log.
+- gitniblet, a Go program, reads the schema and keeps the log.
 
 - shcl, the config format, checks the files and reads the config.
 
@@ -67,11 +67,11 @@ The working files are laid out the way a real deployment would be. A deployment 
 
 ### Configuration model
 
-- `source/config.shcl` has the keys an ngdb registry record has: `name`, `ddl_path`, `log_dir`, and `sqlite_path`.
+- `source/config.shcl` has the keys an gitniblet registry record has: `name`, `ddl_path`, `log_dir`, and `sqlite_path`.
 
 - A relative path is relative to the config file. `${HOME}` is the only variable, and it's replaced as text, never evaluated.
 
-- ngdb reads registry records with absolute paths only, and writes `last_opened` back into them. So the wrapper writes its own record from the config, under `registry/` beside the view, and leaves the tracked config alone.
+- gitniblet reads registry records with absolute paths only, and writes `last_opened` back into them. So the wrapper writes its own record from the config, under `registry/` beside the view, and leaves the tracked config alone.
 
 ### Saves and persistence
 

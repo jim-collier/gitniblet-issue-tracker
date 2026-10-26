@@ -12,7 +12,7 @@
 set -Eeuo pipefail
 
 ## Paths that no lint step or test reads. A push to main that changes only these skips the gate.
-## The tx-log under ngdb/ and everything under source/ and cicd/ are tested, so they aren't here.
+## The tx-log under gitniblet/ and everything under source/ and cicd/ are tested, so they aren't here.
 docsOnly=('*.md' 'project/*' '.github/*')
 
 root="$(git rev-parse --show-toplevel)"

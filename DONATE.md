@@ -1,6 +1,6 @@
-# Support NGDB Issue Tracker
+# Support GITNIBLET Issue Tracker
 
-NGDB Issue Tracker is written and maintained by one programmer in his spare time. If you use it often, or it saves you time, sponsoring it keeps it moving.
+GITNIBLET Issue Tracker is written and maintained by one programmer in his spare time. If you use it often, or it saves you time, sponsoring it keeps it moving.
 
 Even a few dollars a month is meaningful. Or just buy me a coffee.
 

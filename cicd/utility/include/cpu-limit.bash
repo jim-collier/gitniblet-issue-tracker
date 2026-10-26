@@ -6,9 +6,9 @@
 ##	  so a cicd run never pins the whole machine. A quarter when the 1-minute load
 ##	  is over half the CPU count, and a quarter always for the heavy steps (fuzz,
 ##	  -race, leak checks). Never under 1.
-##	- Sets NIT_JOBS and exports GOMAXPROCS, which caps the threads of ngdb, a Go
+##	- Sets NIT_JOBS and exports GOMAXPROCS, which caps the threads of gitniblet, a Go
 ##	  program. Child processes inherit GOMAXPROCS, so sourcing this once in
-##	  cicd.bash covers every ngdb run; the standalone helpers source it too for
+##	  cicd.bash covers every gitniblet run; the standalone helpers source it too for
 ##	  when they run on their own.
 ##	- Sourcing runs fCpuLimit once. cicd.bash runs it again before each step, and
 ##	  a heavy step runs `fCpuLimit heavy`. It also sets NIT_CORES, NIT_LOAD,
@@ -71,4 +71,4 @@ if command -v ionice >/dev/null 2>&1; then ionice -c 3 -p "$$" >/dev/null 2>&1 |
 ##	History:
 ##		- 20260709: Created.
 ##		- 20261025: A quarter when busy or for heavy steps, rechecked per step; nice 19 and idle I/O.
-##		- 20261025: Copied from nano-git-db for ngdb-issue-tracker.
+##		- 20261025: Copied from gitniblet for gitniblet-issue-tracker.

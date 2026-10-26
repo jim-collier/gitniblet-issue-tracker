@@ -1,4 +1,6 @@
 // Docs never hard-wrap, so a paragraph is one long line.
 {
-	"MD013": false
+	"MD013": false,
+	// The changelog repeats Added, Changed and the rest under each release.
+	"MD024": { "siblings_only": true }
 }

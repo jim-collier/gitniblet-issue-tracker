@@ -18,13 +18,13 @@
 
 ## Introduction
 
-Eventually this will all be moved to nano-git-db anyway. This new template is an intermediate effort to make issues going forward more structured and importable. This is a product backlog just for pre-v1.0.0 release.
+Eventually this will all be moved to gitniblet anyway. This new template is an intermediate effort to make issues going forward more structured and importable. This is a product backlog just for pre-v1.0.0 release.
 
-Items about nano-git-db or shcl are gaps found here. They get fixed in those projects, and close here once a fix is in and this project's tests pass on it.
+Items about gitniblet or shcl are gaps found here. They get fixed in those projects, and close here once a fix is in and this project's tests pass on it.
 
 ## Issues
 
-- nano-git-db: a view rebuilt from the log stamps every row's `date_created` with the replay time
+- gitniblet: a view rebuilt from the log stamps every row's `date_created` with the replay time
 	- ID: 2026102509013440
 	- Type: Bug
 	- Status: Queued
@@ -35,10 +35,10 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 		- Create a row, then replay the same log into a new view, as on a fresh clone.
 	- Incorrect behavior [Bug]: The row's `date_created` is the time of the replay. A replay into the existing view keeps it.
 	- Expected behavior [Bug]: `date_created` comes from the log, so every view agrees.
-	- Reproduced [Bug]: 2026-10-25, ngdb 1.0.0-beta.2 (ffd8d58-dirty).
+	- Reproduced [Bug]: 2026-10-25, gitniblet 1.0.0-beta.2 (ffd8d58-dirty).
 	- Test case: dedra. It reports a skip while the bug stands, and passes once it's fixed.
 
-- nano-git-db: a schema with a list can't load clean in both nano-git-db and shcl 3
+- gitniblet: a schema with a list can't load clean in both gitniblet and shcl 3
 	- ID: 2026102509013450
 	- Type: Bug
 	- Status: Queued
@@ -46,15 +46,15 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Opened: 20261025-090134
 	- Opened by: JC
 	- Incorrect behavior [Bug]:
-		- nano-git-db reads shcl with the 2.x rules. It takes `row: idx=1, title="x"` and ignores `[a, b]`.
+		- gitniblet reads shcl with the 2.x rules. It takes `row: idx=1, title="x"` and ignores `[a, b]`.
 		- shcl 3 refuses the bare form, so `shcl check` fails on every seed row and multi-field index.
-		- nano-git-db's own schema for the DDL fails to load in shcl 3, so a DDL can't be checked against it there.
-	- Expected behavior [Bug]: nano-git-db reads shcl 3, and its DDL schema loads in shcl 3.
+		- gitniblet's own schema for the DDL fails to load in shcl 3, so a DDL can't be checked against it there.
+	- Expected behavior [Bug]: gitniblet reads shcl 3, and its DDL schema loads in shcl 3.
 	- Note: The seed rows here are the only list lines. dedqy fails on any other shcl 3 error.
 	- Progress log:
-		- 2026-10-25: nano-git-db is moving to shclwrap and shcl 3.0. Filed there as 2026102509204445. Once it's in, the seed rows here switch to `[a, b]` and dedqy checks the whole file.
+		- 2026-10-25: gitniblet is moving to shclwrap and shcl 3.0. Filed there as 2026102509204445. Once it's in, the seed rows here switch to `[a, b]` and dedqy checks the whole file.
 
-- nano-git-db: per-deployment git sync, set in the config, not the schema
+- gitniblet: per-deployment git sync, set in the config, not the schema
 	- ID: 2026102509013460
 	- Type: Feature
 	- Status: Queued
@@ -77,9 +77,9 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Requirements:
 		- Every standard table and field a competent issue tracker has, beyond the backlog template's rows. Projects, components, milestones, labels, people, and attachments, for a start.
 		- The common views, such as a Kanban board by status, a nested list by parent, and a plain filtered list.
-		- Use nano-git-db's built-in tables, relationships, and views as far as they go, and past that. Each gap gets an item here and a fix in nano-git-db.
+		- Use gitniblet's built-in tables, relationships, and views as far as they go, and past that. Each gap gets an item here and a fix in gitniblet.
 	- Reason:
-		- This project exists to stress shcl, shclwrap, and nano-git-db until they're feature complete. A thin schema wouldn't find much.
+		- This project exists to stress shcl, shclwrap, and gitniblet until they're feature complete. A thin schema wouldn't find much.
 
 - Feature: An MCP server, from early on
 	- ID: 2026102513400563
@@ -93,9 +93,9 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 		- An agent can list, read, file, and update issues and their comments, decisions, and links through MCP.
 		- It grows with the schema, the TUI, the GUI, and the web UI, not after them.
 	- Needs more thought:
-		- Whether the server is generic in nano-git-db, for any schema, with only tracker-specific tools here.
+		- Whether the server is generic in gitniblet, for any schema, with only tracker-specific tools here.
 
-- nano-git-db: `empty_ok: no` and `required: yes` don't refuse an empty value
+- gitniblet: `empty_ok: no` and `required: yes` don't refuse an empty value
 	- ID: 2026102509013470
 	- Type: Bug
 	- Status: Queued
@@ -106,7 +106,7 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Incorrect behavior [Bug]: The row is created. Only a missing field is refused, by `null_ok: no`.
 	- Expected behavior [Bug]: An empty value is refused too.
 
-- nano-git-db: `ngdb ddl` exits 0 on a schema with errors
+- gitniblet: `gitniblet ddl` exits 0 on a schema with errors
 	- ID: 2026102509013480
 	- Type: Bug
 	- Status: Queued
@@ -116,7 +116,7 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Incorrect behavior [Bug]: A type outside the allowed set, an unknown key, a dropped index, and skipped seed rows are all warnings, with exit 0.
 	- Expected behavior [Bug]: A schema error fails, so a script can tell. Today the tests here fail on any warning line instead.
 
-- nano-git-db: open a database from a config file, with paths relative to it
+- gitniblet: open a database from a config file, with paths relative to it
 	- ID: 2026102509013490
 	- Type: Feature
 	- Status: Queued
@@ -124,12 +124,12 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Opened: 20261025-090134
 	- Opened by: JC
 	- Requirements:
-		- Today `--config` takes only a registry folder, and records need absolute paths. ngdb also writes `last_opened` back into the record.
+		- Today `--config` takes only a registry folder, and records need absolute paths. gitniblet also writes `last_opened` back into the record.
 		- A config file of any name and path declares the schema, the tx-log, and the view, each with any name and path. The tx-log's file name is fixed as `txlog.csv` today.
-		- `--config` takes a folder, where ngdb looks for `config.shcl`, or a config file by name.
+		- `--config` takes a folder, where gitniblet looks for `config.shcl`, or a config file by name.
 		- Paths in the config are relative to the file, and `${HOME}` works.
 		- Keep state like `last_opened` out of that file, so it can be tracked in git.
-		- Then `utility/ngdb-dev.bash` can go.
+		- Then `utility/gitniblet-dev.bash` can go.
 
 - Feature: Import a project's backlog.md
 	- ID: 2026102513400593
@@ -140,25 +140,25 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Opened by: JC
 	- Related IDs: 2026102513400533
 	- Requirements:
-		- Each project moves its own backlog.md into the tracker, one at a time. shcl, shclwrap, and nano-git-db go first.
+		- Each project moves its own backlog.md into the tracker, one at a time. shcl, shclwrap, and gitniblet go first.
 		- The schema fields follow the template's rows, so the import maps them field by field.
 	- Needs more detail:
 		- Items in older formats, with no ID or with the ID in the title.
 	- Progress log:
-		- 2026-10-25: Filed in nano-git-db as 2026102509202821.
+		- 2026-10-25: Filed in gitniblet as 2026102509202821.
 
-- nano-git-db: `query` prints columns in name order, not the order selected
+- gitniblet: `query` prints columns in name order, not the order selected
 	- ID: 2026102509013530
 	- Type: Bug
 	- Status: Queued
 	- Severity: Low
 	- Opened: 20261025-090134
 	- Opened by: JC
-	- Steps to reproduce [Bug]: `ngdb query <db> "SELECT 'b' AS b, 'a' AS a"`.
+	- Steps to reproduce [Bug]: `gitniblet query <db> "SELECT 'b' AS b, 'a' AS a"`.
 	- Incorrect behavior [Bug]: The header is `a b`.
 	- Expected behavior [Bug]: `b a`, as selected.
 
-- Move nano-git-db's demo walkthrough and seed script here
+- Move gitniblet's demo walkthrough and seed script here
 	- ID: 2026102509013540
 	- Type: Task
 	- Status: Queued
@@ -169,7 +169,7 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 		- The demo's schema and queries started this one. Its walkthrough and seed script still point at the demo's own files.
 		- They need this schema's lookups and field names before they move.
 	- Progress log:
-		- 2026-10-25: The demo is gone from nano-git-db-floss. Its files are still in that repo's history, under `demos/t7em6_issue-tracker/` at c87f198.
+		- 2026-10-25: The demo is gone from gitniblet-floss. Its files are still in that repo's history, under `demos/t7em6_issue-tracker/` at c87f198.
 
 - 20261025-081804: Dev-environment install script (Linux bash, macOS sh, Windows PowerShell), runnable via a single `curl`/`wget` and documented under "how to develop". Clones main, installs dependencies, and states what it will do with an option to abort.
 
@@ -183,7 +183,7 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Opened: 20261025-090134
 	- Opened by: JC
 	- Requirements:
-		- Start from the nano-git-db issue-tracker demo, which this replaces.
+		- Start from the gitniblet issue-tracker demo, which this replaces.
 		- An issue has the template's rows. Type, status, priority, and effort are pick lists.
 		- Decisions, prereq and related links, comments, and an audit trail.
 		- Named queries for open, waiting, critical and high, closed, and everything.
@@ -191,7 +191,7 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 		- 2026-10-25: Drafted in `source/ddl.shcl` and `source/ddl.queries.shcl`. Field names and lists are a first pass.
 		- 2026-10-25: Stand-in for the hand test: through the dev wrapper, built and replayed a scratch copy, added an issue with lookup values, read it back, and opened the TUI, which showed it under Open issues. Every template row has a field, and the status list matches the template. The full run passed.
 	- Decisions:
-		- Lists use the shcl 2.x form, since that's what nano-git-db reads.
+		- Lists use the shcl 2.x form, since that's what gitniblet reads.
 		- Git sync is off in the schema until a deployment can set it in its own config.
 	- Test case: dedqx, dedqy, dedqz, dedr0 to dedr7.
 	- Closed: 20261025-221203
@@ -204,7 +204,7 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Opened: 20261025-090134
 	- Opened by: JC
 	- Progress log:
-		- 2026-10-25: `source/config.shcl`, the log folder, `utility/ngdb-dev.bash`, the license, and the filled-in templates are in. `dev` is the working branch.
+		- 2026-10-25: `source/config.shcl`, the log folder, `utility/gitniblet-dev.bash`, the license, and the filled-in templates are in. `dev` is the working branch.
 		- 2026-10-25: Stand-in for the hand test: the wrapper with `--config-file` on a scratch config ran `--print`, `build`, `replay`, `create`, `query` and `--tui`, and refused `sync`. The full run passed.
 	- Test case: dedqv, dedqw, dedr9.
 	- Closed: 20261025-221203
@@ -226,10 +226,10 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Opened by: JC
 	- Requirements:
 		- Sweeping override, 2026-10-24: this supersedes any earlier decision on this project that conflicts with it.
-		- Pin the shcl and ngdb versions the tests run against. Today the run prints them.
+		- Pin the shcl and gitniblet versions the tests run against. Today the run prints them.
 		- A first `--backlog-run-full` and a full run, watched end to end.
 	- Progress log:
-		- 2026-10-25: shcl and ngdb are pinned to dev commits in `cicd/container/Dockerfile`, and the tests run against those builds. `cicd/bump-pins.bash` moves either pin, to the newest dev commit by default. The Tests step says which builds ran it, pinned or the host's own.
+		- 2026-10-25: shcl and gitniblet are pinned to dev commits in `cicd/container/Dockerfile`, and the tests run against those builds. `cicd/bump-pins.bash` moves either pin, to the newest dev commit by default. The Tests step says which builds ran it, pinned or the host's own.
 		- 2026-10-25: Watched end to end: `--backlog-run-full`, `--merge-gate`, `--backlog-run-quick`, `--no-container`, and the default run with `--no-publish`. All passed. Publish wasn't run, since it would commit edits that aren't part of this.
 		- 2026-10-25: Stand-in for the hand test: a default run with publish, minus sync, in a scratch clone of r1025 with its own bare remote. It passed lint and tests, wrote and rotated the backup, committed, and pushed. The publish step itself didn't change this round.
 	- Decisions:
@@ -249,9 +249,9 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Requirements:
 		- Per `Containers` and the container bullets of `Cleanup after a run` in the shared CICD rules.
 		- Sweeping override, 2026-10-24: this supersedes any earlier decision on this project that conflicts with it.
-		- The image needs pinned shcl and ngdb builds, plus shellcheck and markdownlint. Everything runs on the host until then, and the run says so in one line.
+		- The image needs pinned shcl and gitniblet builds, plus shellcheck and markdownlint. Everything runs on the host until then, and the run says so in one line.
 	- Progress log:
-		- 2026-10-25: Lint and tests run in an image from `cicd/container/`, with shcl and ngdb built from pinned dev commits, plus pinned shellcheck and markdownlint. The repo is mounted read-only. No docker, or an image that won't build, runs them on the host and says so in one line. `--no-container` does the same on purpose.
+		- 2026-10-25: Lint and tests run in an image from `cicd/container/`, with shcl and gitniblet built from pinned dev commits, plus pinned shellcheck and markdownlint. The repo is mounted read-only. No docker, or an image that won't build, runs them on the host and says so in one line. `--no-container` does the same on purpose.
 		- 2026-10-25: The run's container goes at the end, on failure and on a stop too, then the project's dangling images, its tags older than the one before the current, and week-old build cache. A run stopped partway left nothing behind.
 		- Swept: both test scripts run in the container, `--list` lists both, and lint covers the hook.
 	- Decisions:
@@ -276,7 +276,7 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Progress log:
 		- 2026-10-25: `cicd/hooks/pre-push` runs `cicd.bash --merge-gate --quiet` on a push to `main`, a new `main` included. A push to another branch, a delete, or a push that changes only `*.md`, `project/` or `.github/` skips it. That list sits at the top of the hook. README says how to turn it on, and it's on in this clone.
 	- Decisions:
-		- `ngdb/`, `source/` and `cicd/` aren't docs, since the tests read them.
+		- `gitniblet/`, `source/` and `cicd/` aren't docs, since the tests read them.
 	- Branch: r1025
 	- Test case: deegc, deegd, deege, deegf.
 	- Closed: 20261025-220725
@@ -305,9 +305,9 @@ Items about nano-git-db or shcl are gaps found here. They get fixed in those pro
 	- Opened: 20261025-090134
 	- Opened by: JC
 	- Requirements:
-		- nano-git-db names the file itself, inside `log_dir`. It has no setting for the name.
+		- gitniblet names the file itself, inside `log_dir`. It has no setting for the name.
 	- Decisions:
-		- 2026-10-25 JC: Use `txlog.csv`. nano-git-db should also take any name and path for it from a config file of any name and path. That's 2026102509013490 here.
+		- 2026-10-25 JC: Use `txlog.csv`. gitniblet should also take any name and path for it from a config file of any name and path. That's 2026102509013490 here.
 	- Test case: Not applicable, since the layout already used `txlog.csv`.
 	- Closed: 20261025-092044
 

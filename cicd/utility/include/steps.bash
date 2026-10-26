@@ -84,4 +84,4 @@ fSteps_Footer(){
 
 ##	History:
 ##		- 20261025 JC: Created.
-##		- 20261025 JC: Copied from nano-git-db for ngdb-issue-tracker.
+##		- 20261025 JC: Copied from gitniblet for gitniblet-issue-tracker.

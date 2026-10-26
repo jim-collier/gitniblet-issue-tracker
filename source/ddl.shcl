@@ -1,7 +1,7 @@
-## NGDB Issue Tracker - the database definition nano-git-db opens.
+## GITNIBLET Issue Tracker - the database definition gitniblet opens.
 ## Fields follow the backlog template. Every table also gets id, is_active,
-## date_created and is_deleted from nano-git-db.
-## Lists are written the way nano-git-db's shcl 2.x reader takes them, bare and
+## date_created and is_deleted from gitniblet.
+## Lists are written the way gitniblet's shcl 2.x reader takes them, bare and
 ## comma separated, until it reads shcl format 3.
 
 ## The test log sits inside the dev repo, where a sync would commit and push to

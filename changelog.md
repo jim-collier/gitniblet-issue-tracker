@@ -16,6 +16,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Other work
 -->
 
+## Unreleased
+
+### Changed
+
+- The project is now gitniblet-issue-tracker, built on GitNiblet. `utility/gitniblet-dev.bash` replaces `utility/ngdb-dev.bash`, the test log folder is `gitniblet/`, and env vars start with `GITNIBLET_`.
+
 ## v1.0.0-beta1
 
 ### Notes

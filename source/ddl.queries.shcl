@@ -1,4 +1,4 @@
-## Named queries. Same base name as the DDL, so nano-git-db finds them.
+## Named queries. Same base name as the DDL, so gitniblet finds them.
 ## Status values are lookup idx numbers from the DDL's seed: block.
 ## 20 to 23 are Done, Deferred, Canceled and Moot.
 
