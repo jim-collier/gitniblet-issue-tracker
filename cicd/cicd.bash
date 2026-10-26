@@ -39,7 +39,13 @@ if [[ -z "${doQuietly+x}" ]]; then
 	declare     runMode="run"
 	declare  -a testAreas=()
 	declare  -i doPublish=1  doSync=1  doKeepTemp=0  doList=0
-	declare  -i doContainer=1  doRemote=1  ## Taken for the shared flag set; nothing here uses either yet.
+	declare  -i doContainer=1
+	declare  -i doRemote=1  ## Taken for the shared flag set; nothing runs on other boxes.
+	## Lint and tests run in the pinned image from cicd/container/ unless --no-container.
+	## No docker, or an image that won't build, falls back to this host with one line.
+	declare  -i inContainer=0; [[ "${NIT_IN_CONTAINER:-}" == "1" ]] && inContainer=1
+	declare -r  containerImage="ngdb-issue-tracker-cicd"
+	declare -r  containerEngine="${NIT_DOCKER:-docker}"  ## Anything that takes docker's arguments
 	declare     aliasNote=""
 	declare -r  thisVersion="1.0.0-beta1"
 	declare -r  thisCopyrightYear="2026"
@@ -84,7 +90,7 @@ fSyntax(){  { ((doQuietly)) || ((wasShown_Syntax)); } && return; wasShown_Syntax
 	fEcho_Clean "                      Taken and ignored, since nothing here leaks."
 	fEcho_Clean "      --backlog-run-quick [area...]"
 	fEcho_Clean "                      Lint and tests only, or only the test areas named:"
-	fEcho_Clean "                      config, ddl, log. Also --gate."
+	fEcho_Clean "                      config, ddl, log, cicd. Also --gate."
 	fEcho_Clean "      --backlog-run-full"
 	fEcho_Clean "                      Every check of the default run."
 	fEcho_Clean "      --merge-gate    Every check of the default run, before a merge to main."
@@ -92,9 +98,10 @@ fSyntax(){  { ((doQuietly)) || ((wasShown_Syntax)); } && return; wasShown_Syntax
 	fEcho_Clean "                      These 3 never sync, commit, push or prompt."
 	fEcho_Clean "      --no-publish    Skip backup + publish: no commit, no push."
 	fEcho_Clean "      --no-sync       Skip the fast-forward from the remote."
-	fEcho_Clean "      --no-container  Taken. Everything runs on this host for now."
+	fEcho_Clean "      --no-container  Lint and test on this host, with its own shcl and ngdb."
 	fEcho_Clean "      --no-remote     Taken. Nothing runs on the other boxes yet."
-	fEcho_Clean "      --keep-temp     Keep the run folder, and print where it is."
+	fEcho_Clean "      --keep-temp     Keep the run folder and the run's container, and print"
+	fEcho_Clean "                      where they are."
 	fEcho_Clean "      --list          Print the steps and test IDs these flags would run."
 	fEcho_Clean "  -q, --quiet         Run unattended and quiet; flows to publish."
 	fEcho_Clean "  -m, --message MSG   Commit message for publish (also --msg; -m MSG or -m=MSG)."
@@ -107,6 +114,14 @@ fSyntax(){  { ((doQuietly)) || ((wasShown_Syntax)); } && return; wasShown_Syntax
 	fEcho_Clean "removes run folders older than 2 days whose run.pid is gone. Every step runs"
 	fEcho_Clean "at nice 19 and idle I/O, and ngdb gets half the CPUs, or a quarter when the"
 	fEcho_Clean "1-minute load is over half of them."
+	fEcho_Clean ""
+	fEcho_Clean "Lint and tests run in an image with shcl and ngdb built from the dev commits"
+	fEcho_Clean "pinned in cicd/container/Dockerfile, built the first time it's needed."
+	fEcho_Clean "cicd/bump-pins.bash moves the pins. No docker, or an image that won't build,"
+	fEcho_Clean "falls back to this host. At the end the run's container goes, then this"
+	fEcho_Clean "project's dangling images, its image tags older than the one before the"
+	fEcho_Clean "current, and build cache older than a week. NIT_DOCKER names a program that"
+	fEcho_Clean "takes docker's arguments."
 	#           X-------------------------------------------------------------------------------X
 	fEcho_Clean "" ;:;}
 
@@ -141,31 +156,33 @@ fMain(){
 
 	local area
 	for area in "${testAreas[@]}"; do
-		[[ "${area}" =~ ^(config|ddl|log)$ ]]  ||  fThrowError "Unknown area: '${area}'. The areas are config, ddl and log."
+		[[ "${area}" =~ ^(config|ddl|log|cicd)$ ]]  ||  fThrowError "Unknown area: '${area}'. The areas are config, ddl, log and cicd."
 	done
 
 	## The backlog and gate modes leave the tree and the remote alone, and never prompt.
 	if [[ "${runMode}" == backlog-* || "${runMode}" == "merge-gate" ]]; then
 		doPublish=0; doSync=0; doQuietly=1
 	fi
+	## The run in the container only lints and tests. The outer run does the rest.
+	if ((inContainer)); then doContainer=0; doPublish=0; doSync=0; doQuietly=1; fi
 
 	local commitMessage="${cliMessage}"
 	if [[ -z "${commitMessage}" ]] && ((doQuietly)); then commitMessage="Updated"; fi
 
 	fMustBeInPath realpath
-	fMustBeInPath shcl
-	fMustBeInPath "${NGDB_BIN:-ngdb}"
 	fResolvePath dirPath_Base "${dirPath_Base}"; readonly dirPath_Base
 	fResolvePath gitAutomationScript "${gitAutomationScript}"; readonly gitAutomationScript
 
 	cd "${dirPath_Base}"
-	fSteps_PlanAll
+	## The run in the container numbers its steps from the outer run's list.
+	if ((inContainer)) && [[ -n "${NIT_STEPS:-}" ]]; then fSteps_Import
+	else fSteps_PlanAll; fi
 
 	if ((doList)); then
 		local s
 		for s in "${stepsOn[@]}"; do fEcho_Clean "Step: ${s}"; done
 		for s in "${stepsOff[@]}"; do fEcho_Clean "Off: ${s}"; done
-		if fStep_IsOn "Tests"; then "${dirPath_Base}/cicd/utility/ddl-test.bash" --list "${testAreas[@]}"; fi
+		if fStep_IsOn "Tests"; then fTests --list; fi
 		return 0
 	fi
 
@@ -193,39 +210,58 @@ fMain(){
 	#### MAKEITSO
 	####
 
-	fTempRun_Sweep
-	runDir="$(fTempRun_Make)"  ||  fThrowError "Couldn't make a run folder under '${HOST_TEMP}/${tempProject}'."
-	export NIT_RUN_DIR="${runDir}"
-	export TMPDIR="${runDir}" TEMP="${runDir}" TMP="${runDir}"
+	## The run in the container uses the outer run's folder, and the outer run logs it.
+	if ((inContainer)); then
+		runDir="${NIT_RUN_DIR:-}"
+		[[ -n "${runDir}" && -d "${runDir}" ]]  ||  fThrowError "NIT_RUN_DIR isn't a folder: '${runDir}'."
+	else
+		fTempRun_Sweep
+		runDir="$(fTempRun_Make)"  ||  fThrowError "Couldn't make a run folder under '${HOST_TEMP}/${tempProject}'."
+		runStamp="${runDir##*/}"
+		export NIT_RUN_DIR="${runDir}"
+		export TMPDIR="${runDir}" TEMP="${runDir}" TMP="${runDir}"
 
-	## The whole run goes to a rotated log, which lint-report.bash reads.
-	local dirPath_ArtifactsLint="${dirPath_Base}/cicd/artifacts/lint"
-	if mkdir -p "${dirPath_ArtifactsLint}" 2> /dev/null; then
-		gfs_rotate "${dirPath_ArtifactsLint}" run log > /dev/null 2>&1  ||  true
-		## tee ignores Ctrl+C, or the cleanup at exit writes into a dead pipe and dies.
-		exec > >(trap '' INT TERM; exec tee "${dirPath_ArtifactsLint}/run_${serialDT}.log") 2>&1
+		## The whole run goes to a rotated log, which lint-report.bash reads. A
+		## test that starts a nested run points NIT_LOG_DIR elsewhere.
+		local dirPath_ArtifactsLint="${NIT_LOG_DIR:-${dirPath_Base}/cicd/artifacts/lint}"
+		if mkdir -p "${dirPath_ArtifactsLint}" 2> /dev/null; then
+			gfs_rotate "${dirPath_ArtifactsLint}" run log > /dev/null 2>&1  ||  true
+			## tee ignores Ctrl+C, or the cleanup at exit writes into a dead pipe and dies.
+			exec > >(trap '' INT TERM; exec tee "${dirPath_ArtifactsLint}/run_${serialDT}.log") 2>&1
+		fi
+
+		local containerLine
+		if ((! doContainer)); then containerLine="Container: off (--no-container), so lint and tests run on this host, with its own shcl and ngdb."
+		elif fContainer_Check; then
+			useContainer=1
+			containerLine="Container: ${containerTag} for lint and tests, at --cpus ${NIT_JOBS_MAX}, with shcl ${pinShcl:0:8} and ngdb ${pinNgdb:0:8} from their dev branches."
+		else containerLine="Container: ${containerWhy}, so lint and tests run on this host, with its own shcl and ngdb."
+		fi
+		local -a headerLines=("CPUs: ${NIT_CORES}, load ${NIT_LOAD}. ngdb gets half, or a quarter when the load is over half.")
+		headerLines+=("${containerLine}")
+		[[ -z "${aliasNote}" ]]  ||  headerLines+=("${aliasNote}")
+		fSteps_Header "${projectName} CI/CD, ${runMode}" "${headerLines[@]}"
 	fi
 
-	local -a headerLines=("CPUs: ${NIT_CORES}, load ${NIT_LOAD}. ngdb gets half, or a quarter when the load is over half.")
-	headerLines+=("Container: none yet, so everything runs on this host.")
-	[[ -z "${aliasNote}" ]]  ||  headerLines+=("${aliasNote}")
-	headerLines+=("Tools: $(shcl --version 2>&1 | head -1); $("${NGDB_BIN:-ngdb}" --version 2>&1 | head -1)")
-	fSteps_Header "${projectName} CI/CD, ${runMode}" "${headerLines[@]}"
-
-	if fStep "Sync from remote"; then
+	if ((! inContainer)) && fStep "Sync from remote"; then
 		fSync
 		fStep_End
 	fi
 
-	if fStep "Lint"; then
-		fLint
-		fStep_End
-	fi
+	if ((useContainer)) && fContainer_Ready; then
+		fStage_Container
+	else
+		if fStep "Lint"; then
+			fLint
+			fStep_End
+		fi
 
-	if fStep "Tests"; then
-		"${dirPath_Base}/cicd/utility/ddl-test.bash" "${testAreas[@]}"  ||  fThrowError "Tests failed; the output is above."
-		fStep_End
+		if fStep "Tests"; then
+			fTests
+			fStep_End
+		fi
 	fi
+	((! inContainer))  ||  return 0
 
 	if fStep "Backup + publish"; then
 		local -a gitArgs=()
@@ -236,6 +272,33 @@ fMain(){
 	fi
 
 	fSteps_Footer "${projectName} CI/CD: done; PASS, ${#stepsOn[@]} steps"
+}
+
+
+## The database tests, then the pipeline's own. Says which shcl and ngdb ran them.
+fTests(){
+	local -a dbAreas=() area
+	local -i doCicd=1
+	if ((${#testAreas[@]})); then
+		doCicd=0
+		for area in "${testAreas[@]}"; do if [[ "${area}" == "cicd" ]]; then doCicd=1; else dbAreas+=("${area}"); fi; done
+	fi
+	if [[ "${1:-}" == "--list" ]]; then
+		if ((! ${#testAreas[@]} || ${#dbAreas[@]})); then "${dirPath_Base}/cicd/utility/ddl-test.bash" --list "${dbAreas[@]}"; fi
+		if ((doCicd)); then "${dirPath_Base}/cicd/utility/cicd-test.bash" --list; fi
+		return 0
+	fi
+	fMustBeInPath shcl
+	fMustBeInPath "${NGDB_BIN:-ngdb}"
+	local where="this host's own, not the pinned builds"
+	((! inContainer))  ||  where="pinned at shcl ${NIT_PIN_SHCL:0:8} and ngdb ${NIT_PIN_NGDB:0:8}"
+	fEcho_Clean "Tools: $(shcl --version 2>&1 | head -1); $("${NGDB_BIN:-ngdb}" --version 2>&1 | head -1); ${where}"
+	if ((! ${#testAreas[@]} || ${#dbAreas[@]})); then
+		"${dirPath_Base}/cicd/utility/ddl-test.bash" "${dbAreas[@]}"  ||  fThrowError "Tests failed; the output is above."
+	fi
+	if ((doCicd)); then
+		"${dirPath_Base}/cicd/utility/cicd-test.bash"  ||  fThrowError "Tests failed; the output is above."
+	fi
 }
 
 
@@ -288,7 +351,7 @@ fSync(){
 ## and the license, contributing and conduct docs are left as their templates came.
 fLint(){
 	local -a bashFiles=() mdFiles=()
-	mapfile -t bashFiles < <(git ls-files -co --exclude-standard -- '*.bash' | grep -vF 'gfs-rotate.bash')
+	mapfile -t bashFiles < <(git ls-files -co --exclude-standard -- '*.bash' 'cicd/hooks/*' | grep -vF 'gfs-rotate.bash')
 	((${#bashFiles[@]}))  ||  fThrowError "Lint found no bash files."
 	fEcho_Clean "shellcheck: ${#bashFiles[@]} files"
 	shellcheck -x -- "${bashFiles[@]}"  ||  fThrowError "shellcheck failed; the output is above."
@@ -302,14 +365,139 @@ fLint(){
 	fi
 }
 
+#••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
+## Sets containerTag and the pins, or containerWhy when the run should stay on
+## this host. Prints nothing, so the first section can say which it is.
+declare containerTag="" containerWhy="" pinShcl="" pinNgdb="" runStamp=""
+declare -i useContainer=0  dockerUsed=0  imagePassed=0  ## For the cleanup at exit
+fContainer_Check(){
+	if [[ "$(uname -m)" != "x86_64" ]]; then containerWhy="the image is x86_64 only"
+	elif ! command -v "${containerEngine}" &>/dev/null; then containerWhy="no ${containerEngine}"
+	elif ! "${containerEngine}" version --format '{{.Server.Version}}' &>/dev/null; then containerWhy="${containerEngine} isn't answering"
+	fi
+	[[ -z "${containerWhy}" ]]  ||  return 1
+	dockerUsed=1
+
+	local -r recipe="${dirPath_Base}/cicd/container"
+	## Called as an if condition, where set -e is off, so a throw has to exit.
+	[[ -f "${recipe}/Dockerfile" ]]  ||  { fThrowError "Missing the container recipe: '${recipe}/Dockerfile'."; exit 1; }
+	pinShcl="$(sed -n 's/^ARG SHCL_REV=//p' "${recipe}/Dockerfile")"
+	pinNgdb="$(sed -n 's/^ARG NGDB_REV=//p' "${recipe}/Dockerfile")"
+	[[ "${pinShcl}" =~ ^[0-9a-f]{40}$ && "${pinNgdb}" =~ ^[0-9a-f]{40}$ ]]  ||  { fThrowError "SHCL_REV and NGDB_REV in '${recipe}/Dockerfile' have to be full commits."; exit 1; }
+
+	## Tagged by the recipe's hash, so an edited recipe or pin can't run on the old image.
+	containerTag="${containerImage}:$(cat "${recipe}/Dockerfile" "${recipe}/package.json" "${recipe}/package-lock.json" | sha256sum | cut -c1-12)"
+	return 0
+}
+
+## Builds the image if it isn't there yet. Returns 1 with one line when the run
+## should stay on this host after all.
+fContainer_Ready(){
+	"${containerEngine}" image inspect "${containerTag}" &>/dev/null  &&  return 0
+	fEcho_Clean "Container image: building ${containerTag}"
+	## nice reaches only the client; the build itself runs in the daemon, so JOBS caps cargo and go.
+	if ! nice -n 19 "${containerEngine}" build --label "dev.project=${projectName}" --label "dev.run=${runStamp}" \
+		--build-arg "JOBS=${NIT_JOBS}" -t "${containerTag}" "${dirPath_Base}/cicd/container"
+	then
+		fEcho_Clean "Container: ${containerTag} didn't build, so lint and tests run on this host, with its own shcl and ngdb."; return 1
+	fi
+}
+
+## The repo at its own path, read-only, as the caller's uid, so paths in the
+## output still point at something and nothing in it can be rewritten. The run
+## inside numbers its steps from this run's list, checks the load before each
+## one, and never takes more than the container's --cpus.
+fStage_Container(){
+	fCpuLimit
+	fSteps_Export
+	local -a innerArgs=(-q --no-container)
+	case "${runMode}" in
+		quick)          innerArgs+=(--quick) ;;
+		backlog-quick)  innerArgs+=(--backlog-run-quick "${testAreas[@]}") ;;
+		backlog-full)   innerArgs+=(--backlog-run-full) ;;
+		merge-gate)     innerArgs+=(--merge-gate) ;;
+	esac
+	local -a runArgs=(--init
+		--name "${projectName}-${runStamp}-lint-test" --label "dev.project=${projectName}" --label "dev.run=${runStamp}"
+		--cpus "${NIT_JOBS_MAX}" --cpu-shares 256 --user "$(id -u):$(id -g)"
+		-v "${dirPath_Base}:${dirPath_Base}:ro" -w "${dirPath_Base}"
+		-v "${runDir}:${runDir}" -e NIT_RUN_DIR -e HOST_TEMP -e TMPDIR -e TEMP -e TMP -e NIT_IN_CONTAINER=1
+		-e NIT_STEPS -e "NIT_JOBS_CAP=${NIT_JOBS_MAX}")
+	((doKeepTemp))  ||  runArgs+=(--rm)
+	## The host's time zone, for the step lines' local time.
+	[[ ! -f /etc/localtime ]]  ||  runArgs+=(-v /etc/localtime:/etc/localtime:ro)
+	[[ -z "${TZ:-}" ]]  ||  runArgs+=(-e TZ)
+	## A worktree's .git file points at the main checkout's.
+	local gitCommon
+	gitCommon="$(git -C "${dirPath_Base}" rev-parse --path-format=absolute --git-common-dir)"
+	[[ "${gitCommon}" == "${dirPath_Base}/"* ]]  ||  runArgs+=(-v "${gitCommon}:${gitCommon}:ro")
+
+	## In the background, since Ctrl+C would only reach the container's init.
+	## Ctrl+C kills the short sleep below at once, and the cleanup at exit
+	## removes the container.
+	fEcho_Clean "Container: running ${projectName}-${runStamp}-lint-test"
+	"${containerEngine}" run "${runArgs[@]}" "${containerTag}" nice -n 19 bash "${dirPath_Base}/cicd/cicd.bash" "${innerArgs[@]}" &
+	local ctrPid=$!
+	while kill -0 "${ctrPid}" 2> /dev/null; do sleep 0.5; done
+	wait "${ctrPid}"  ||  fThrowError "The run in the container failed; its output is above."
+	fEcho_WasLastEchoBlank_Set 1  ## the run inside closed its last step with a blank line
+	imagePassed=1
+}
+
+## Only what carries this project's label, and never rmi -f, so an image a
+## container still uses stays. The run's container goes first.
+fContainer_Cleanup(){
+	((dockerUsed))  ||  return 0
+	local -a ids=() removed=() oldTags=()
+	local before after tag
+	before="$(fDocker_Bytes)"
+
+	mapfile -t ids < <("${containerEngine}" ps -aq --filter "label=dev.project=${projectName}" --filter "label=dev.run=${runStamp}" 2> /dev/null)
+	if ((${#ids[@]})); then
+		if ((doKeepTemp)); then
+			"${containerEngine}" stop "${ids[@]}" &> /dev/null  ||  true
+			fEcho_Clean "Kept container ${projectName}-${runStamp}-lint-test (--keep-temp)."
+		else
+			"${containerEngine}" rm -f "${ids[@]}" &> /dev/null  &&  removed+=("${#ids[@]} container(s)")
+		fi
+	fi
+
+	mapfile -t ids < <("${containerEngine}" image ls -q --filter "label=dev.project=${projectName}" --filter dangling=true 2> /dev/null)
+	if ((${#ids[@]})) && "${containerEngine}" rmi "${ids[@]}" &> /dev/null; then removed+=("${#ids[@]} dangling image(s)"); fi
+
+	## Newest first. Keep the tag that just passed and the one before it.
+	if ((imagePassed)) && [[ -n "${containerTag}" ]]; then
+		mapfile -t oldTags < <("${containerEngine}" image ls "${containerImage}" --filter "label=dev.project=${projectName}" \
+			--format '{{.Repository}}:{{.Tag}}' 2> /dev/null | grep -vxF -e "${containerTag}" -e "${containerImage}:<none>" | tail -n +2)
+		for tag in "${oldTags[@]}"; do "${containerEngine}" rmi "${tag}" &> /dev/null  &&  removed+=("${tag}"); done
+	fi
+
+	"${containerEngine}" builder prune -f --filter until=168h &> /dev/null  ||  true
+
+	after="$(fDocker_Bytes)"
+	local freed="?"
+	[[ "${before}" =~ ^[0-9]+$ && "${after}" =~ ^[0-9]+$ ]]  &&  freed="$(numfmt --to=si --suffix=B $(( before > after ? before - after : 0 )))"
+	fEcho_Clean "Docker cleanup: removed ${removed[*]:-no containers or images}, plus week-old build cache; freed about ${freed}."
+}
+
+## Total of docker system df's sizes, in bytes.
+fDocker_Bytes(){
+	"${containerEngine}" system df --format '{{.Size}}' 2> /dev/null | numfmt --from=si --suffix=B --invalid=ignore 2> /dev/null \
+		| awk '{ sub(/B$/, ""); t += $1 } END { printf "%d\n", t }'
+}
+
 
 #••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 fCleanup(){
 	## A step still open here is the one that failed or was interrupted.
 	fStep_Fail
-	if [[ -n "${runDir}" && -d "${runDir}" ]]; then
-		if ((doKeepTemp)); then fEcho_Clean "Kept the run folder: ${runDir}"
-		else fSafeRm "${runDir}" > /dev/null  ||  true; fi
+	## Not inside the container: the outer run owns the folder and the docker side.
+	if ((! inContainer)); then
+		fContainer_Cleanup  ||  true
+		if [[ -n "${runDir}" && -d "${runDir}" ]]; then
+			if ((doKeepTemp)); then fEcho_Clean "Kept the run folder: ${runDir}"
+			else fSafeRm "${runDir}" > /dev/null  ||  true; fi
+		fi
 	fi
 	fEcho_Clean
 }
